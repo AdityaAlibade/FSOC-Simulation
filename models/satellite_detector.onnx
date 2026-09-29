@@ -1,0 +1,654 @@
+
+pytorch
+2.14.0+cpu:˜É
+≠
+input_frame
+layer1.conv.weight
+layer1.conv.weight_biasgetitemnode_Conv_89"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†JÚ
+	namespace‰: train_satellite_detector.SatelliteDetectorCNN/layer1: train_satellite_detector.ConvBlock/layer1.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJŸ
+pkg.torch.onnx.class_hierarchy∂['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J¨
+pkg.torch.onnx.fx_nodeë%_native_batch_norm_legit_no_training : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d, %p_layer1_bn_weight, %p_layer1_bn_bias, %b_layer1_bn_running_mean, %b_layer1_bn_running_var, 0.1, 1e-05), kwargs = {})Ja
+pkg.torch.onnx.name_scopesC['', 'layer1', 'layer1.bn', '_native_batch_norm_legit_no_training']J£
+pkg.torch.onnx.stack_traceÑFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 149, in forward
+    feat = self.layer1(x)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ı
+getitem
+leaky_relunode_leaky_relu"	LeakyRelu*
+alphaÕÃÃ=†Jæ
+	namespace∞: train_satellite_detector.SatelliteDetectorCNN/layer1: train_satellite_detector.ConvBlock/layer1.act: torch.nn.modules.activation.LeakyReLU/leaky_relu: aten.leaky_relu.defaultJæ
+pkg.torch.onnx.class_hierarchyõ['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jî
+pkg.torch.onnx.fx_nodez%leaky_relu : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem, 0.1), kwargs = {})JH
+pkg.torch.onnx.name_scopes*['', 'layer1', 'layer1.act', 'leaky_relu']JÕ
+pkg.torch.onnx.stack_traceÆFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 149, in forward
+    feat = self.layer1(x)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+π
+
+leaky_relu
+layer2.conv.weight
+layer2.conv.weight_bias	getitem_3node_Conv_91"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†JÙ
+	namespaceÊ: train_satellite_detector.SatelliteDetectorCNN/layer2: train_satellite_detector.ConvBlock/layer2.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_1: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJŸ
+pkg.torch.onnx.class_hierarchy∂['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J∞
+pkg.torch.onnx.fx_nodeï%_native_batch_norm_legit_no_training_1 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_1, %p_layer2_bn_weight, %p_layer2_bn_bias, %b_layer2_bn_running_mean, %b_layer2_bn_running_var, 0.1, 1e-05), kwargs = {})Jc
+pkg.torch.onnx.name_scopesE['', 'layer2', 'layer2.bn', '_native_batch_norm_legit_no_training_1']J¶
+pkg.torch.onnx.stack_traceáFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 150, in forward
+    feat = self.layer2(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ü	
+	getitem_3leaky_relu_1node_leaky_relu_1"	LeakyRelu*
+alphaÕÃÃ=†J¿
+	namespace≤: train_satellite_detector.SatelliteDetectorCNN/layer2: train_satellite_detector.ConvBlock/layer2.act: torch.nn.modules.activation.LeakyReLU/leaky_relu_1: aten.leaky_relu.defaultJæ
+pkg.torch.onnx.class_hierarchyõ['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_1 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_3, 0.1), kwargs = {})JJ
+pkg.torch.onnx.name_scopes,['', 'layer2', 'layer2.act', 'leaky_relu_1']J–
+pkg.torch.onnx.stack_trace±File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 150, in forward
+    feat = self.layer2(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+ª
+leaky_relu_1
+layer3.conv.weight
+layer3.conv.weight_bias	getitem_6node_Conv_93"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†JÙ
+	namespaceÊ: train_satellite_detector.SatelliteDetectorCNN/layer3: train_satellite_detector.ConvBlock/layer3.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_2: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJŸ
+pkg.torch.onnx.class_hierarchy∂['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J∞
+pkg.torch.onnx.fx_nodeï%_native_batch_norm_legit_no_training_2 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_2, %p_layer3_bn_weight, %p_layer3_bn_bias, %b_layer3_bn_running_mean, %b_layer3_bn_running_var, 0.1, 1e-05), kwargs = {})Jc
+pkg.torch.onnx.name_scopesE['', 'layer3', 'layer3.bn', '_native_batch_norm_legit_no_training_2']J¶
+pkg.torch.onnx.stack_traceáFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 151, in forward
+    feat = self.layer3(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ü	
+	getitem_6leaky_relu_2node_leaky_relu_2"	LeakyRelu*
+alphaÕÃÃ=†J¿
+	namespace≤: train_satellite_detector.SatelliteDetectorCNN/layer3: train_satellite_detector.ConvBlock/layer3.act: torch.nn.modules.activation.LeakyReLU/leaky_relu_2: aten.leaky_relu.defaultJæ
+pkg.torch.onnx.class_hierarchyõ['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_2 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_6, 0.1), kwargs = {})JJ
+pkg.torch.onnx.name_scopes,['', 'layer3', 'layer3.act', 'leaky_relu_2']J–
+pkg.torch.onnx.stack_trace±File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 151, in forward
+    feat = self.layer3(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+ª
+leaky_relu_2
+layer4.conv.weight
+layer4.conv.weight_bias	getitem_9node_Conv_95"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†JÙ
+	namespaceÊ: train_satellite_detector.SatelliteDetectorCNN/layer4: train_satellite_detector.ConvBlock/layer4.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_3: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJŸ
+pkg.torch.onnx.class_hierarchy∂['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J∞
+pkg.torch.onnx.fx_nodeï%_native_batch_norm_legit_no_training_3 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_3, %p_layer4_bn_weight, %p_layer4_bn_bias, %b_layer4_bn_running_mean, %b_layer4_bn_running_var, 0.1, 1e-05), kwargs = {})Jc
+pkg.torch.onnx.name_scopesE['', 'layer4', 'layer4.bn', '_native_batch_norm_legit_no_training_3']J¶
+pkg.torch.onnx.stack_traceáFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 152, in forward
+    feat = self.layer4(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ü	
+	getitem_9leaky_relu_3node_leaky_relu_3"	LeakyRelu*
+alphaÕÃÃ=†J¿
+	namespace≤: train_satellite_detector.SatelliteDetectorCNN/layer4: train_satellite_detector.ConvBlock/layer4.act: torch.nn.modules.activation.LeakyReLU/leaky_relu_3: aten.leaky_relu.defaultJæ
+pkg.torch.onnx.class_hierarchyõ['train_satellite_detector.SatelliteDetectorCNN', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_3 : [num_users=2] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_9, 0.1), kwargs = {})JJ
+pkg.torch.onnx.name_scopes,['', 'layer4', 'layer4.act', 'leaky_relu_3']J–
+pkg.torch.onnx.stack_trace±File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 152, in forward
+    feat = self.layer4(feat)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+Õ
+leaky_relu_3
+refine.0.conv.weight
+refine.0.conv.weight_bias
+getitem_12node_Conv_97"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†J¶
+	namespaceò: train_satellite_detector.SatelliteDetectorCNN/refine: torch.nn.modules.container.Sequential/refine.0: train_satellite_detector.ConvBlock/refine.0.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_4: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJÇ
+pkg.torch.onnx.class_hierarchyﬂ['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J∏
+pkg.torch.onnx.fx_nodeù%_native_batch_norm_legit_no_training_4 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_4, %p_refine_0_bn_weight, %p_refine_0_bn_bias, %b_refine_0_bn_running_mean, %b_refine_0_bn_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'refine', 'refine.0', 'refine.0.bn', '_native_batch_norm_legit_no_training_4']J¬
+pkg.torch.onnx.stack_trace£File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 153, in forward
+    feat = feat + self.refine(feat)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ç
+
+getitem_12leaky_relu_4node_leaky_relu_4"	LeakyRelu*
+alphaÕÃÃ=†JÚ
+	namespace‰: train_satellite_detector.SatelliteDetectorCNN/refine: torch.nn.modules.container.Sequential/refine.0: train_satellite_detector.ConvBlock/refine.0.act: torch.nn.modules.activation.LeakyReLU/leaky_relu_4: aten.leaky_relu.defaultJÁ
+pkg.torch.onnx.class_hierarchyƒ['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jô
+pkg.torch.onnx.fx_node%leaky_relu_4 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_12, 0.1), kwargs = {})JX
+pkg.torch.onnx.name_scopes:['', 'refine', 'refine.0', 'refine.0.act', 'leaky_relu_4']JÏ
+pkg.torch.onnx.stack_traceÕFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 153, in forward
+    feat = feat + self.refine(feat)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+Õ
+leaky_relu_4
+refine.1.conv.weight
+refine.1.conv.weight_bias
+getitem_15node_Conv_99"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@@@@†J¶
+	namespaceò: train_satellite_detector.SatelliteDetectorCNN/refine: torch.nn.modules.container.Sequential/refine.1: train_satellite_detector.ConvBlock/refine.1.bn: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_5: aten._native_batch_norm_legit_no_training.defaultJV
+!pkg.onnxscript.rewriter.rule_name1FuseBatchNormIntoConv, RemoveOptionalBiasFromConvJÇ
+pkg.torch.onnx.class_hierarchyﬂ['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J∏
+pkg.torch.onnx.fx_nodeù%_native_batch_norm_legit_no_training_5 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_5, %p_refine_1_bn_weight, %p_refine_1_bn_bias, %b_refine_1_bn_running_mean, %b_refine_1_bn_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'refine', 'refine.1', 'refine.1.bn', '_native_batch_norm_legit_no_training_5']J¬
+pkg.torch.onnx.stack_trace£File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 153, in forward
+    feat = feat + self.refine(feat)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ç
+
+getitem_15leaky_relu_5node_leaky_relu_5"	LeakyRelu*
+alphaÕÃÃ=†JÚ
+	namespace‰: train_satellite_detector.SatelliteDetectorCNN/refine: torch.nn.modules.container.Sequential/refine.1: train_satellite_detector.ConvBlock/refine.1.act: torch.nn.modules.activation.LeakyReLU/leaky_relu_5: aten.leaky_relu.defaultJÁ
+pkg.torch.onnx.class_hierarchyƒ['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'train_satellite_detector.ConvBlock', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jô
+pkg.torch.onnx.fx_node%leaky_relu_5 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_15, 0.1), kwargs = {})JX
+pkg.torch.onnx.name_scopes:['', 'refine', 'refine.1', 'refine.1.act', 'leaky_relu_5']JÏ
+pkg.torch.onnx.stack_traceÕFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 153, in forward
+    feat = feat + self.refine(feat)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 118, in forward
+    return self.act(self.bn(self.conv(x)))
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+∆
+leaky_relu_3
+leaky_relu_5addnode_add"AddJQ
+	namespaceD: train_satellite_detector.SatelliteDetectorCNN/add: aten.add.TensorJf
+pkg.torch.onnx.class_hierarchyD['train_satellite_detector.SatelliteDetectorCNN', 'aten.add.Tensor']Jî
+pkg.torch.onnx.fx_nodez%add : [num_users=2] = call_function[target=torch.ops.aten.add.Tensor](args = (%leaky_relu_3, %leaky_relu_5), kwargs = {})J)
+pkg.torch.onnx.name_scopes['', 'add']Jñ
+pkg.torch.onnx.stack_tracexFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 153, in forward
+    feat = feat + self.refine(feat)
+ú
+add
+obj_head.weight
+obj_head.biasconv2d_6node_conv2d_6"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@ @ @ @ †JÅ
+	namespacet: train_satellite_detector.SatelliteDetectorCNN/obj_head: torch.nn.modules.conv.Conv2d/conv2d_6: aten.conv2d.defaultJä
+pkg.torch.onnx.class_hierarchyh['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.conv.Conv2d', 'aten.conv2d.default']J¨
+pkg.torch.onnx.fx_nodeë%conv2d_6 : [num_users=1] = call_function[target=torch.ops.aten.conv2d.default](args = (%add, %p_obj_head_weight, %p_obj_head_bias), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'obj_head', 'conv2d_6']J‰
+pkg.torch.onnx.stack_trace≈File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 155, in forward
+    obj_logits = self.obj_head(feat).squeeze(1) # [B, 15, 20]
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\conv.py", line 565, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+Ï
+conv2d_6
+val_69objectness_logitsnode_squeeze"SqueezeJV
+	namespaceI: train_satellite_detector.SatelliteDetectorCNN/squeeze: aten.squeeze.dimJg
+pkg.torch.onnx.class_hierarchyE['train_satellite_detector.SatelliteDetectorCNN', 'aten.squeeze.dim']Jâ
+pkg.torch.onnx.fx_nodeo%squeeze : [num_users=1] = call_function[target=torch.ops.aten.squeeze.dim](args = (%conv2d_6, 1), kwargs = {})J-
+pkg.torch.onnx.name_scopes['', 'squeeze']J±
+pkg.torch.onnx.stack_traceíFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 155, in forward
+    obj_logits = self.obj_head(feat).squeeze(1) # [B, 15, 20]
+ß
+
+add
+box_head.0.weight
+box_head.0.biasconv2d_7node_conv2d_7"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@ @ @ @ †J¥
+	namespace¶: train_satellite_detector.SatelliteDetectorCNN/box_head: torch.nn.modules.container.Sequential/box_head.0: torch.nn.modules.conv.Conv2d/conv2d_7: aten.conv2d.defaultJ¥
+pkg.torch.onnx.class_hierarchyë['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv2d', 'aten.conv2d.default']J∞
+pkg.torch.onnx.fx_nodeï%conv2d_7 : [num_users=1] = call_function[target=torch.ops.aten.conv2d.default](args = (%add, %p_box_head_0_weight, %p_box_head_0_bias), kwargs = {})JH
+pkg.torch.onnx.name_scopes*['', 'box_head', 'box_head.0', 'conv2d_7']J¸
+pkg.torch.onnx.stack_trace›File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 156, in forward
+    boxes = self.box_head(feat)                 # [B, 4, 15, 20]
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\conv.py", line 565, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+≈	
+conv2d_7leaky_relu_6node_leaky_relu_6"	LeakyRelu*
+alphaÕÃÃ=†J≈
+	namespace∑: train_satellite_detector.SatelliteDetectorCNN/box_head: torch.nn.modules.container.Sequential/box_head.1: torch.nn.modules.activation.LeakyReLU/leaky_relu_6: aten.leaky_relu.defaultJ¡
+pkg.torch.onnx.class_hierarchyû['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jó
+pkg.torch.onnx.fx_node}%leaky_relu_6 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%conv2d_7, 0.1), kwargs = {})JL
+pkg.torch.onnx.name_scopes.['', 'box_head', 'box_head.1', 'leaky_relu_6']Já
+pkg.torch.onnx.stack_traceËFile "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 156, in forward
+    boxes = self.box_head(feat)                 # [B, 4, 15, 20]
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+π
+
+leaky_relu_6
+box_head.2.weight
+box_head.2.biasconv2d_8node_conv2d_8"Conv*
+kernel_shape@@†*
+group†*
+auto_pad"NOTSET†*
+	dilations@@†*
+strides@@†*
+pads@ @ @ @ †J¥
+	namespace¶: train_satellite_detector.SatelliteDetectorCNN/box_head: torch.nn.modules.container.Sequential/box_head.2: torch.nn.modules.conv.Conv2d/conv2d_8: aten.conv2d.defaultJ¥
+pkg.torch.onnx.class_hierarchyë['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv2d', 'aten.conv2d.default']Jπ
+pkg.torch.onnx.fx_nodeû%conv2d_8 : [num_users=1] = call_function[target=torch.ops.aten.conv2d.default](args = (%leaky_relu_6, %p_box_head_2_weight, %p_box_head_2_bias), kwargs = {})JH
+pkg.torch.onnx.name_scopes*['', 'box_head', 'box_head.2', 'conv2d_8']J¸
+pkg.torch.onnx.stack_trace›File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 156, in forward
+    boxes = self.box_head(feat)                 # [B, 4, 15, 20]
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\conv.py", line 565, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+Ì
+conv2d_8bounding_boxesnode_sigmoid"SigmoidJª
+	namespace≠: train_satellite_detector.SatelliteDetectorCNN/box_head: torch.nn.modules.container.Sequential/box_head.3: torch.nn.modules.activation.Sigmoid/sigmoid: aten.sigmoid.defaultJº
+pkg.torch.onnx.class_hierarchyô['train_satellite_detector.SatelliteDetectorCNN', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.Sigmoid', 'aten.sigmoid.default']Jã
+pkg.torch.onnx.fx_nodeq%sigmoid : [num_users=1] = call_function[target=torch.ops.aten.sigmoid.default](args = (%conv2d_8,), kwargs = {})JG
+pkg.torch.onnx.name_scopes)['', 'box_head', 'box_head.3', 'sigmoid']JÂ
+pkg.torch.onnx.stack_trace∆File "C:\Users\aliba\Desktop\FSOC\train_satellite_detector.py", line 156, in forward
+    boxes = self.box_head(feat)                 # [B, 4, 15, 20]
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\container.py", line 259, in forward
+    input = module(input)
+  File "C:\Users\aliba\AppData\Roaming\Python\Python314\site-packages\torch\nn\modules\activation.py", line 361, in forward
+    return torch.sigmoid(input)
+main_graph*iBlayer1.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset2048j
+length576p*k Blayer2.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset3648j
+length18432p*l@ Blayer3.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset54848j
+length73728p*oÄ@Blayer4.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset128576j
+length294912p*rÄÄBrefine.0.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset423488j
+length589824p*sÄÄBrefine.1.conv.weightj(
+locationsatellite_detector.onnx.dataj
+offset1013312j
+length589824p*dÄBobj_head.weightj(
+locationsatellite_detector.onnx.dataj
+offset0j
+length512p*Bobj_head.biasJç&yΩ*l@ÄBbox_head.0.weightj(
+locationsatellite_detector.onnx.dataj
+offset22080j
+length32768p*ò@Bbox_head.0.biasJÄ'=iÎK=VYdΩKi÷Ω_ŸÉ=Qg»ºÜrèΩ˘µçº•°A=ÉóΩ‡â~ºYà=PΩ∆;°=úû= ºFΩm4mΩ[¢ΩÔΩ⁄ºJ∞â=^nÁ=ôÕ=#Ü`=ÉÁ…:ãtg<;n=ﬂY =!)è=ª$πºAmÄ;˝7ÄΩëöº>Õ=ï¯ò=Y^åΩ∞6÷ª:ôΩ…ÕÑΩ¯aΩ–‚u=#';KÓêΩÓLÍ< ^ΩØ|Ã=
+N†º◊∑3=©‹=Jê=;B_<7Ëw=F«c=Á≤s<VıeΩì¬º„û=;ödΩ∫[Ω√gz=ü¿ºåb7=ìàí=êı=>cŸ<*i@Bbox_head.2.weightj(
+locationsatellite_detector.onnx.dataj
+offset2624j
+length1024p*'Bbox_head.2.biasJ+¡≥Ω∏NïΩ‹1™ºã!à<*_Blayer1.conv.weight_biasJ@∞ÿæ1' @éÄx?N R?/};?xcˆ?54‘ø≥™\?•8?÷NÇæìÈ~ø∫Ü
+?-' ?ZÏ†?«^⁄?sÚ˜ø*† Blayer2.conv.weight_biasJÄíD>ı≤æ4Ïî?1¶¡>SéM?t¬ø‘Åàæ–±Ñ?t˙9?£_·<Qyœº#ÈEæh›=I∞œ?√ê∏>î®æ	—Æ>] S?°Tæ>Ï⁄Ï<»^S>ê–7=L’?Øi¢>Êq?@.î?c˝>#üæXIq?{¯?¥u?„r?*†@Blayer3.conv.weight_biasJÄ“ôó?D—6?6?\>¥æ?‹m8?Æ?NÚ∂>j⁄Ω>v¢>≤P?Üúlæïã?Xã?M{å?ª@?∂\?Û=U?æπÑ?∏P≈æ1J—?àU?é!æ?Â˘øÓçR?åÖ>V>A>]*cΩ∂Ä^?≈X∆?é◊}<4gﬁ=4d?⁄¢+?wR&?‚˚4>Gsø≈….?ye?3N~?ˆÕ•æäYH?·'ö?óøŸ>u·a>ËX∆>ﬂ0?§û>‚Qá=9!N?NÅTæπb—>ƒm @»%ì?÷ €=ë)∞?œW¢æo8?•√ô?q∆?:‰=>;Ÿ«?2Z?àÍå?}.?*hÄBlayer4.conv.weight_biasj(
+locationsatellite_detector.onnx.dataj
+offset512j
+length512p*kÄBrefine.0.conv.weight_biasj(
+locationsatellite_detector.onnx.dataj
+offset1024j
+length512p*kÄBrefine.1.conv.weight_biasj(
+locationsatellite_detector.onnx.dataj
+offset1536j
+length512p*Bval_69J       ZÕ
+input_frame
+
+
+
+
+¿"=
+/pkg.torch.export.graph_signature.InputSpec.kind
+USER_INPUT"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"&
+!pkg.torch.onnx.original_node_namexbñ
+objectness_logits
+
+
+
+"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT",
+!pkg.torch.onnx.original_node_namesqueezebó
+bounding_boxes
+
+
+
+
+"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT",
+!pkg.torch.onnx.original_node_namesigmoidj,
+layer1.conv.weight
+
+
+
+
+j,
+layer2.conv.weight
+
+ 
+
+
+j,
+layer3.conv.weight
+
+@
+ 
+
+j-
+layer4.conv.weight
+
+Ä
+@
+
+j0
+refine.0.conv.weight
+
+Ä
+Ä
+
+j0
+refine.1.conv.weight
+
+Ä
+Ä
+
+jﬂ
+obj_head.weight
+
+
+Ä
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"6
+!pkg.torch.onnx.original_node_namep_obj_head_weightjŒ
+obj_head.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"4
+!pkg.torch.onnx.original_node_namep_obj_head_biasj„
+box_head.0.weight
+
+@
+Ä
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"8
+!pkg.torch.onnx.original_node_namep_box_head_0_weightj“
+box_head.0.bias
+
+
+@"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"6
+!pkg.torch.onnx.original_node_namep_box_head_0_biasj‚
+box_head.2.weight
+
+
+@
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"8
+!pkg.torch.onnx.original_node_namep_box_head_2_weightj“
+box_head.2.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"6
+!pkg.torch.onnx.original_node_namep_box_head_2_biasj%
+layer1.conv.weight_bias
+
+
+j%
+layer2.conv.weight_bias
+
+
+ j%
+layer3.conv.weight_bias
+
+
+@j&
+layer4.conv.weight_bias
+	
+Äj(
+refine.0.conv.weight_bias
+	
+Äj(
+refine.1.conv.weight_bias
+	
+Äj
+val_69
+
+
+j"
+getitem
+
+
+
+x
+†j%
+
+leaky_relu
+
+
+
+x
+†j#
+	getitem_3
+
+
+ 
+<
+Pj&
+leaky_relu_1
+
+
+ 
+<
+Pj#
+	getitem_6
+
+
+@
+
+(j&
+leaky_relu_2
+
+
+@
+
+(j$
+	getitem_9
+
+
+Ä
+
+j'
+leaky_relu_3
+
+
+Ä
+
+j%
+
+getitem_12
+
+
+Ä
+
+j'
+leaky_relu_4
+
+
+Ä
+
+j%
+
+getitem_15
+
+
+Ä
+
+j'
+leaky_relu_5
+
+
+Ä
+
+j
+add
+
+
+Ä
+
+j"
+conv2d_6
+
+
+
+
+j"
+conv2d_7
+
+
+@
+
+j&
+leaky_relu_6
+
+
+@
+
+j"
+conv2d_8
+
+
+
+
+Ç‰
+0pkg.torch.export.ExportedProgram.graph_signatureØ
+# inputs
+p_layer1_conv_weight: PARAMETER target='layer1.conv.weight'
+p_layer1_bn_weight: PARAMETER target='layer1.bn.weight'
+p_layer1_bn_bias: PARAMETER target='layer1.bn.bias'
+p_layer2_conv_weight: PARAMETER target='layer2.conv.weight'
+p_layer2_bn_weight: PARAMETER target='layer2.bn.weight'
+p_layer2_bn_bias: PARAMETER target='layer2.bn.bias'
+p_layer3_conv_weight: PARAMETER target='layer3.conv.weight'
+p_layer3_bn_weight: PARAMETER target='layer3.bn.weight'
+p_layer3_bn_bias: PARAMETER target='layer3.bn.bias'
+p_layer4_conv_weight: PARAMETER target='layer4.conv.weight'
+p_layer4_bn_weight: PARAMETER target='layer4.bn.weight'
+p_layer4_bn_bias: PARAMETER target='layer4.bn.bias'
+p_refine_0_conv_weight: PARAMETER target='refine.0.conv.weight'
+p_refine_0_bn_weight: PARAMETER target='refine.0.bn.weight'
+p_refine_0_bn_bias: PARAMETER target='refine.0.bn.bias'
+p_refine_1_conv_weight: PARAMETER target='refine.1.conv.weight'
+p_refine_1_bn_weight: PARAMETER target='refine.1.bn.weight'
+p_refine_1_bn_bias: PARAMETER target='refine.1.bn.bias'
+p_obj_head_weight: PARAMETER target='obj_head.weight'
+p_obj_head_bias: PARAMETER target='obj_head.bias'
+p_box_head_0_weight: PARAMETER target='box_head.0.weight'
+p_box_head_0_bias: PARAMETER target='box_head.0.bias'
+p_box_head_2_weight: PARAMETER target='box_head.2.weight'
+p_box_head_2_bias: PARAMETER target='box_head.2.bias'
+b_layer1_bn_running_mean: BUFFER target='layer1.bn.running_mean' persistent=True
+b_layer1_bn_running_var: BUFFER target='layer1.bn.running_var' persistent=True
+b_layer1_bn_num_batches_tracked: BUFFER target='layer1.bn.num_batches_tracked' persistent=True
+b_layer2_bn_running_mean: BUFFER target='layer2.bn.running_mean' persistent=True
+b_layer2_bn_running_var: BUFFER target='layer2.bn.running_var' persistent=True
+b_layer2_bn_num_batches_tracked: BUFFER target='layer2.bn.num_batches_tracked' persistent=True
+b_layer3_bn_running_mean: BUFFER target='layer3.bn.running_mean' persistent=True
+b_layer3_bn_running_var: BUFFER target='layer3.bn.running_var' persistent=True
+b_layer3_bn_num_batches_tracked: BUFFER target='layer3.bn.num_batches_tracked' persistent=True
+b_layer4_bn_running_mean: BUFFER target='layer4.bn.running_mean' persistent=True
+b_layer4_bn_running_var: BUFFER target='layer4.bn.running_var' persistent=True
+b_layer4_bn_num_batches_tracked: BUFFER target='layer4.bn.num_batches_tracked' persistent=True
+b_refine_0_bn_running_mean: BUFFER target='refine.0.bn.running_mean' persistent=True
+b_refine_0_bn_running_var: BUFFER target='refine.0.bn.running_var' persistent=True
+b_refine_0_bn_num_batches_tracked: BUFFER target='refine.0.bn.num_batches_tracked' persistent=True
+b_refine_1_bn_running_mean: BUFFER target='refine.1.bn.running_mean' persistent=True
+b_refine_1_bn_running_var: BUFFER target='refine.1.bn.running_var' persistent=True
+b_refine_1_bn_num_batches_tracked: BUFFER target='refine.1.bn.num_batches_tracked' persistent=True
+x: USER_INPUT
+
+# outputs
+squeeze: USER_OUTPUT
+sigmoid: USER_OUTPUT
+Ç8
+2pkg.torch.export.ExportedProgram.range_constraints{}B
+ 

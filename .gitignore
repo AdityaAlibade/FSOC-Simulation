@@ -8,6 +8,14 @@ FSOC_DATASET/frames/
 FSOC_DATASET/videos/
 *.mp4
 
+# Large ML dataset image frames (too large for GitHub)
+ml_dataset/train/
+ml_dataset/val/
+ml_dataset/test/
+
+# ML tracking result frames
+ml_tracking_results/
+
 # OS / Editor files
 .DS_Store
 Thumbs.db

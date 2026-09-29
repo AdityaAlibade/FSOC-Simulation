@@ -1,0 +1,51 @@
+{
+  "dataset_name": "FSOC Optical Satellite Tracking Dataset",
+  "format": "YOLO (class x_center y_center width height normalized)",
+  "classes": [
+    "satellite"
+  ],
+  "splits": {
+    "train": {
+      "scenarios": [
+        "SCN_001",
+        "SCN_002",
+        "SCN_003",
+        "SCN_005"
+      ],
+      "total_images": 3600,
+      "positive_images": 3600,
+      "negative_images": 0,
+      "percentage": 50.0
+    },
+    "val": {
+      "scenarios": [
+        "SCN_004",
+        "SCN_006"
+      ],
+      "total_images": 1800,
+      "positive_images": 1800,
+      "negative_images": 0,
+      "percentage": 25.0
+    },
+    "test": {
+      "scenarios": [
+        "SCN_007",
+        "SCN_008"
+      ],
+      "total_images": 1800,
+      "positive_images": 1678,
+      "negative_images": 122,
+      "percentage": 25.0
+    }
+  },
+  "summary": {
+    "total_images": 7200,
+    "total_positive": 7078,
+    "total_negative": 122,
+    "image_resolution": [
+      640,
+      480
+    ],
+    "channels": 1
+  }
+}
