@@ -1,0 +1,12 @@
+scenario_id,target_id,target_role,motion_type,initial_x,initial_y,target_speed,direction,radius,angular_velocity,target_size,initial_phase,enabled
+SCN_009,TGT_001,COMMUNICATION_TARGET,circular,320.0,240.0,30.0,0.0,140.0,0.214,10,0.0,true
+SCN_009,TGT_002,DECOY_TARGET,straight_line,120.0,160.0,20.0,25.0,0.0,0.0,10,0.0,true
+SCN_010,TGT_001,COMMUNICATION_TARGET,circular,320.0,240.0,35.0,0.0,150.0,0.233,10,0.0,true
+SCN_010,TGT_002,DECOY_TARGET,figure_8,320.0,240.0,38.0,0.0,110.0,0.345,9,0.0,true
+SCN_010,TGT_003,DECOY_TARGET,straight_line,140.0,360.0,24.0,-20.0,0.0,0.0,11,0.0,true
+SCN_011,TGT_001,COMMUNICATION_TARGET,straight_line,160.0,160.0,28.0,32.0,0.0,0.0,10,0.0,true
+SCN_011,TGT_002,DECOY_TARGET,straight_line,160.0,320.0,28.0,-32.0,0.0,0.0,10,0.0,true
+SCN_011,TGT_003,DECOY_TARGET,circular,320.0,240.0,22.0,0.0,120.0,0.183,8,1.57,true
+SCN_012,TGT_001,COMMUNICATION_TARGET,circular,320.0,240.0,30.0,0.0,130.0,0.231,10,0.0,true
+SCN_012,TGT_002,DECOY_TARGET,straight_line,110.0,240.0,20.0,5.0,0.0,0.0,10,0.0,true
+SCN_012,TGT_003,DECOY_TARGET,random,440.0,220.0,18.0,0.0,0.0,0.0,9,0.0,true

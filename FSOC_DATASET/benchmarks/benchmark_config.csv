@@ -1,0 +1,9 @@
+benchmark_id,scenario_id,motion_type,noise_type,atmospheric_condition,camera_jitter,platform_motion,target_speed,target_size,duration_seconds,fps
+BM_001,SCN_001,straight_line,none,Clear,none,none,17.77,10,30,30
+BM_002,SCN_002,circular,gaussian,Clear,none,none,67.02,10,30,30
+BM_003,SCN_003,figure_8,none,Clear,high_frequency,none,55.4,15,30,30
+BM_004,SCN_004,random,none,Clear,none,circular,34.82,10,30,30
+BM_005,SCN_005,straight_line,none,Fog,none,none,15.92,12,30,30
+BM_006,SCN_006,circular,gaussian,Low Light,none,none,43.98,8,30,30
+BM_007,SCN_007,figure_8,salt_and_pepper,Haze,high_frequency,linear,48.65,15,30,30
+BM_008,SCN_008,random,gaussian,Rain,high_frequency,spiral,36.14,10,30,30

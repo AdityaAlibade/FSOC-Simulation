@@ -1,0 +1,10 @@
+{
+  "kp_pan": 0.8,
+  "kp_tilt": 0.8,
+  "max_pan_speed": 5.0,
+  "max_tilt_speed": 5.0,
+  "alignment_threshold_horizontal": 0.05,
+  "alignment_threshold_vertical": 0.05,
+  "alignment_stability_frames": 5,
+  "fps": 30
+}

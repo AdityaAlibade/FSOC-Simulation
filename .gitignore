@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large generated dataset frames and videos
+FSOC_DATASET/frames/
+FSOC_DATASET/videos/
+*.mp4
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.lnk
+.idea/
+.vscode/

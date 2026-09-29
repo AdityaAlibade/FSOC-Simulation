@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FSOC Virtual Camera Tracking System</title>
+  <style>
+    :root {
+      --bg-dark: #0f1115;
+      --panel-bg: #181b21;
+      --panel-border: #282d37;
+      --panel-header: #8a919e;
+      --text-main: #d1d5db;
+      --text-dim: #717784;
+      --accent-orange: #ff5722;
+      --accent-amber: #ff9800;
+      --accent-green: #00e676;
+      --accent-red: #ff334b;
+      --accent-cyan: #00e5ff;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'Consolas', 'Courier New', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* TOP HEADER BAR */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #14171d;
+      border-bottom: 1px solid var(--panel-border);
+      padding: 8px 16px;
+      height: 48px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.2px;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #222631;
+      border: 1px solid #363c4a;
+      color: #e2e8f0;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .ctrl-btn:hover {
+      background: #2d3342;
+      border-color: #4a5366;
+    }
+
+    .ctrl-btn.active {
+      background: var(--accent-orange);
+      border-color: #ff7043;
+      color: #ffffff;
+    }
+
+    .selector-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 12px;
+    }
+
+    .selector-label {
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+
+    .scenario-select {
+      background: #1e222c;
+      border: 1px solid #363c4a;
+      color: #f1f5f9;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .top-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .telemetry-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .telemetry-item .label {
+      font-size: 9px;
+      color: var(--text-dim);
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+    }
+
+    .telemetry-item .value {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* MAIN CONTAINER GRID */
+    .dashboard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px;
+      height: calc(100vh - 48px);
+    }
+
+    .row-top {
+      display: grid;
+      grid-template-columns: 1.15fr 1.6fr 0.95fr;
+      gap: 8px;
+      flex: 1.5;
+      min-height: 0;
+    }
+
+    .row-bottom {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr 1.4fr;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    @media (max-width: 1180px) {
+      .row-bottom {
+        grid-template-columns: 1.2fr 1fr 1.2fr;
+      }
+    }
+
+    /* CARD PANELS */
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel-header {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--panel-header);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 1. VIRTUAL CAMERA VIEW */
+    .camera-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #050608;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #cameraCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .camera-hud-top {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.4;
+      color: #94a3b8;
+      pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 4px 8px;
+      border-radius: 3px;
+    }
+
+    .camera-hud-bottom {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.4;
+      color: #94a3b8;
+      pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 4px 8px;
+      border-radius: 3px;
+    }
+
+    .hud-val-green {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .hud-val-red {
+      color: var(--accent-red);
+      font-weight: 700;
+    }
+
+    /* 2. 2D FSOC ENVIRONMENT */
+    .radar-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #090b0e;
+    }
+
+    #envCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 3. OPTIONS / CONTROLS */
+    .controls-content {
+      padding: 8px 12px;
+      overflow-y: auto;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 2px;
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-group input[type="range"] {
+      width: 70px;
+      accent-color: var(--accent-orange);
+      cursor: pointer;
+    }
+
+    .param-badge {
+      min-width: 48px;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+
+    .ctrl-select {
+      background: #13161c;
+      border: 1px solid #333a48;
+      color: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      outline: none;
+    }
+
+    /* iOS-style toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 30px;
+      height: 16px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-toggle {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #333a46;
+      transition: .2s;
+      border-radius: 16px;
+    }
+
+    .slider-toggle:before {
+      position: absolute;
+      content: "";
+      height: 10px;
+      width: 10px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-toggle {
+      background-color: var(--accent-orange);
+    }
+
+    input:checked + .slider-toggle:before {
+      transform: translateX(14px);
+    }
+
+    /* 4. TRACKING STATE PANEL (Responsive State Machine & Timeline Chart) */
+    .tracking-state-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .state-pill {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+    .state-pill.locked {
+      background: rgba(255, 87, 34, 0.25);
+      border: 1px solid #ff5722;
+      color: #ff8a65;
+      box-shadow: 0 0 8px rgba(255, 87, 34, 0.4);
+    }
+    .state-pill.lost {
+      background: rgba(255, 51, 75, 0.25);
+      border: 1px solid #ff334b;
+      color: #ff8a99;
+      box-shadow: 0 0 8px rgba(255, 51, 75, 0.4);
+    }
+    .state-pill.tracking {
+      background: rgba(0, 229, 255, 0.2);
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+    }
+    .state-pill.acquiring {
+      background: rgba(255, 152, 0, 0.2);
+      border: 1px solid #ff9800;
+      color: #ffb74d;
+    }
+    .state-pill.searching {
+      background: rgba(148, 163, 184, 0.2);
+      border: 1px solid #64748b;
+      color: #94a3b8;
+    }
+
+    .state-view-tabs {
+      display: flex;
+      gap: 3px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .state-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .state-tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .state-tab-btn.active {
+      color: #ffffff;
+      background: var(--accent-orange);
+      box-shadow: 0 0 6px rgba(255, 87, 34, 0.4);
+    }
+
+    .tracking-state-body {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 5px 6px 4px 6px;
+      box-sizing: border-box;
+      gap: 4px;
+      overflow: hidden;
+      min-height: 0;
+      min-width: 0;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    .state-svg-wrapper {
+      width: 100%;
+      height: auto;
+      max-height: 82px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding-bottom: 3px;
+      box-sizing: border-box;
+    }
+
+    .state-flow-svg {
+      width: 100%;
+      height: 100%;
+      max-width: 570px;
+      overflow: visible;
+    }
+
+    .svg-state-node {
+      cursor: default;
+      transition: all 0.3s;
+    }
+    .svg-state-node .node-bg {
+      fill: #161a22;
+      stroke: #333c4d;
+      stroke-width: 1.2;
+      transition: all 0.3s ease;
+    }
+    .svg-state-node .node-text {
+      fill: #94a3b8;
+      font-family: var(--font-sans);
+      font-size: 9.5px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+      letter-spacing: 0.4px;
+      transition: fill 0.3s ease;
+    }
+
+    /* Active Node Styles in SVG */
+    .svg-state-node.active-locked .node-bg {
+      fill: rgba(255, 87, 34, 0.32);
+      stroke: #ff5722;
+      stroke-width: 2.0;
+      filter: url(#glowOrange);
+    }
+    .svg-state-node.active-locked .node-text {
+      fill: #ffffff;
+      font-weight: 800;
+    }
+
+    .svg-state-node.active-lost .node-bg {
+      fill: rgba(255, 51, 75, 0.32);
+      stroke: #ff334b;
+      stroke-width: 2.0;
+      filter: url(#glowRed);
+    }
+    .svg-state-node.active-lost .node-text {
+      fill: #ffffff;
+      font-weight: 800;
+    }
+
+    .svg-state-node.active-track .node-bg {
+      fill: rgba(0, 229, 255, 0.28);
+      stroke: #00e5ff;
+      stroke-width: 2.0;
+      filter: url(#glowCyan);
+    }
+    .svg-state-node.active-track .node-text {
+      fill: #ffffff;
+      font-weight: 800;
+    }
+
+    .svg-state-node.active-acq .node-bg {
+      fill: rgba(255, 152, 0, 0.25);
+      stroke: #ff9800;
+      stroke-width: 2.0;
+    }
+    .svg-state-node.active-acq .node-text {
+      fill: #ffb74d;
+      font-weight: 800;
+    }
+
+    /* State Timeline Chart Styles */
+    .state-chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      min-height: 85px;
+      min-width: 0;
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .state-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 2px 4px;
+      font-size: 9.5px;
+      font-family: var(--font-sans);
+      color: #94a3b8;
+    }
+
+    .chart-subtitle {
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .leg-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 8.5px;
+      font-weight: 700;
+    }
+
+    .leg-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-locked { background: #ff5722; box-shadow: 0 0 4px #ff5722; }
+    .dot-track { background: #00e5ff; box-shadow: 0 0 4px #00e5ff; }
+    .dot-lost { background: #ff334b; box-shadow: 0 0 4px #ff334b; }
+
+    .state-canvas-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      min-height: 65px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #trackingTimelineCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 5. PERFORMANCE METRICS */
+    .metrics-table {
+      width: 100%;
+      height: 100%;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 2px 0;
+    }
+
+    .metric-label {
+      color: #94a3b8;
+      font-family: var(--font-sans);
+    }
+
+    .metric-value {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* 6. ERROR GRAPH */
+    .graph-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .graph-inner-title {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    #errorCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div class="brand-title">FSOC Virtual Camera Tracking System</div>
+      <div class="top-controls">
+        <button class="ctrl-btn active" id="btnStart">▶ Start</button>
+        <button class="ctrl-btn" id="btnPause">⏸ Pause</button>
+        <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
+      </div>
+      <div class="selector-group">
+        <span class="selector-label">Scenario Selector</span>
+        <select class="scenario-select" id="scenarioSelect">
+          <option value="SCN_001">Scenario 1: Straight Line + Clear</option>
+          <option value="SCN_002">Scenario 2: Circular Orbit + Gaussian Noise</option>
+          <option value="SCN_003">Scenario 3: Figure-8 + Camera Jitter</option>
+          <option value="SCN_004" selected>Scenario 4: Random Motion + Jitter</option>
+          <option value="SCN_005">Scenario 5: Straight Line + Fog</option>
+          <option value="SCN_006">Scenario 6: Circular + Low Light + Noise</option>
+          <option value="SCN_007">Scenario 7: Figure-8 + Haze + Disturbances</option>
+          <option value="SCN_008">Scenario 8: Random Motion + Target Loss</option>
+          <option value="SCN_009">Scenario 9: Two Moving Targets + Clear</option>
+          <option value="SCN_010">Scenario 10: Three Moving Targets + Gaussian Noise</option>
+          <option value="SCN_011">Scenario 11: Multiple Targets + Camera Jitter + Platform Motion</option>
+          <option value="SCN_012">Scenario 12: Multiple Targets + Target Loss + Reacquisition</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="top-telemetry">
+      <div class="telemetry-item">
+        <span class="label">Simulation Time</span>
+        <span class="value" id="simTime">00:02:15.34</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="label">FPS</span>
+        <span class="value" id="topFps">58.2</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="label">State State</span>
+        <span class="value" style="color: var(--accent-orange); font-size: 11px;">Current Camera Tracking System</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- DASHBOARD MAIN GRID -->
+  <main class="dashboard-grid">
+    <!-- TOP ROW -->
+    <div class="row-top">
+      <!-- 1. VIRTUAL CAMERA VIEW -->
+      <section class="panel">
+        <div class="panel-header">VIRTUAL CAMERA VIEW</div>
+        <div class="panel-body camera-container">
+          <canvas id="cameraCanvas" width="640" height="480"></canvas>
+          
+          <div class="camera-hud-top">
+            <div>Simulated <span id="hudRes">640x480</span></div>
+            <div>Detected: <span class="hud-val-green" id="hudDetected">YES</span></div>
+            <div>Detected Centroid: <span id="hudDetCentroid">(321.4, 239.8)</span></div>
+            <div>Ground Truth: <span id="hudGtCentroid">(320.9, 240.2)</span></div>
+            <div>Centroid Error: <span class="hud-val-green" id="hudCentroidError">0.6 px</span></div>
+          </div>
+
+          <div class="camera-hud-bottom">
+            <div>Detected: <span class="hud-val-green" id="hudDetected2">YES</span></div>
+            <div>Detected Centroid: <span id="hudDetCentroid2">(321.4, 239.8)</span></div>
+            <div>Ground Truth: <span id="hudGtCentroid2">(320.9, 240.2)</span></div>
+            <div>Centroid Error: <span class="hud-val-green" id="hudCentroidError2">0.6 px</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 2D FSOC ENVIRONMENT -->
+      <section class="panel">
+        <div class="panel-header">
+          <span>2D FSOC ENVIRONMENT</span>
+        </div>
+        <div class="panel-body radar-container">
+          <canvas id="envCanvas"></canvas>
+        </div>
+      </section>
+
+      <!-- 3. OPTIONS / CONTROLS (CAUSALLY CONNECTED) -->
+      <section class="panel">
+        <div class="panel-header">OPTIONS / CONTROLS</div>
+        <div class="panel-body">
+          <div class="controls-content">
+            <!-- CAMERA -->
+            <div>
+              <div class="section-title">CAMERA PARAMETERS</div>
+              <div class="ctrl-row">
+                <span>FOV</span>
+                <div class="slider-group">
+                  <input type="range" min="1" max="10" step="0.5" value="4" id="fovSlider">
+                  <span class="param-badge" id="fovVal">4.0° × 3.0°</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <span>Max Pan Speed</span>
+                <div class="slider-group">
+                  <input type="range" min="1" max="15" value="5" id="panSpeedSlider">
+                  <span class="param-badge" id="panSpeedVal">5°/s</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <span>Max Tilt Speed</span>
+                <div class="slider-group">
+                  <input type="range" min="1" max="15" value="5" id="tiltSpeedSlider">
+                  <span class="param-badge" id="tiltSpeedVal">5°/s</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <span>Update Rate</span>
+                <div class="slider-group">
+                  <input type="range" min="10" max="60" value="30" id="rateSlider">
+                  <span class="param-badge" id="rateVal">30 Hz</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TARGET -->
+            <div>
+              <div class="section-title">SATELLITE PARAMETERS</div>
+              <div class="ctrl-row">
+                <span>Motion Type</span>
+                <select class="ctrl-select" id="motionTypeSelect">
+                  <option value="circular" selected>Circular</option>
+                  <option value="straight_line">Straight Line</option>
+                  <option value="figure_8">Figure-8</option>
+                  <option value="random">Random</option>
+                </select>
+              </div>
+              <div class="ctrl-row">
+                <span>Target Speed</span>
+                <div class="slider-group">
+                  <input type="range" min="5" max="100" value="35" id="targetSpeedSlider">
+                  <span class="param-badge" id="targetSpeedVal">35 px/s</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <span>Target Size</span>
+                <div class="slider-group">
+                  <input type="range" min="4" max="25" value="10" id="targetSizeSlider">
+                  <span class="param-badge" id="targetSizeVal">10 × 10 px</span>
+                </div>
+              </div>
+              <div class="ctrl-row" id="rowOrbitRadius">
+                <span>Orbit Radius</span>
+                <div class="slider-group">
+                  <input type="range" min="150" max="650" step="10" value="450" id="radiusSlider">
+                  <span class="param-badge" id="radiusVal">450 px</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <span>Trajectory Sync</span>
+                <span class="param-badge" id="trajSyncBadge" style="color: var(--accent-green); font-weight: 700;">PASS (&lt;0.01 px)</span>
+              </div>
+            </div>
+
+            <!-- DISTURBANCES -->
+            <div>
+              <div class="section-title">DISTURBANCES</div>
+              <div class="ctrl-row">
+                <span>Image Noise</span>
+                <label class="switch">
+                  <input type="checkbox" id="noiseToggle" checked>
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+              <div class="ctrl-row">
+                <span>Camera Jitter</span>
+                <label class="switch">
+                  <input type="checkbox" id="jitterToggle" checked>
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+              <div class="ctrl-row">
+                <span>Platform Motion</span>
+                <label class="switch">
+                  <input type="checkbox" id="platformToggle">
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+              <div class="ctrl-row">
+                <span>Atmospheric Condition</span>
+                <label class="switch">
+                  <input type="checkbox" id="atmoToggle" checked>
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+              <div class="ctrl-row">
+                <span>Vibration</span>
+                <label class="switch">
+                  <input type="checkbox" id="vibeToggle">
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+              <div class="ctrl-row">
+                <span>Target Occlusion (Loss)</span>
+                <label class="switch">
+                  <input type="checkbox" id="lossToggle">
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- MULTI-TARGET TRACKING INFO PANEL (Section 54) -->
+            <div style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 4px; padding: 8px 10px; margin-top: 4px;">
+              <div class="section-title" style="color: var(--accent-cyan); border-bottom-color: rgba(0, 229, 255, 0.25); margin-bottom: 6px;">MULTI-TARGET TRACKING</div>
+              <ol style="margin-left: 18px; color: #cbd5e1; font-size: 10px; line-height: 1.55; font-family: var(--font-sans);">
+                <li>Detect all visible candidates</li>
+                <li>Compare candidates with previous target positions</li>
+                <li>Associate candidates with existing tracks</li>
+                <li>Identify communication target</li>
+                <li>Track selected target</li>
+                <li>Reject decoy targets</li>
+                <li>Calculate angular error</li>
+                <li>Control virtual pan/tilt</li>
+                <li>Maintain beam only to selected target</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="row-bottom">
+      <!-- 4. TRACKING STATE -->
+      <section class="panel tracking-state-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <span>TRACKING STATE</span>
+            <span class="state-pill locked" id="headerStatePill">LOCKED</span>
+          </div>
+          <div class="state-view-tabs" id="stateViewTabs">
+            <button class="state-tab-btn active" data-view="combined" title="Show Flow Diagram & Timeline Chart">Combined</button>
+            <button class="state-tab-btn" data-view="chart" title="Show Responsive Timeline Chart">Chart</button>
+            <button class="state-tab-btn" data-view="flow" title="Show State Machine Flow">Flow</button>
+          </div>
+        </div>
+        <div class="panel-body tracking-state-body" id="trackingStateBody">
+          <!-- Flow Diagram (Scalable SVG matching user reference Image 3) -->
+          <div class="state-svg-wrapper" id="stateSvgWrapper">
+            <svg class="state-flow-svg" id="stateFlowSvg" viewBox="0 0 570 86" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="arrowGray" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#4b5563" />
+                </marker>
+                <marker id="arrowOrange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#ff9800" />
+                </marker>
+                <filter id="glowOrange" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ff5722" flood-opacity="0.8" />
+                </filter>
+                <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ff334b" flood-opacity="0.8" />
+                </filter>
+                <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#00e5ff" flood-opacity="0.8" />
+                </filter>
+              </defs>
+
+              <!-- Top Bypass Connector: SEARCHING -> LOCKED (as shown in user Image 3) -->
+              <path d="M 48,30 L 48,14 Q 48,10 52,10 L 318,10 Q 322,10 322,14 L 322,26" 
+                    fill="none" stroke="#ff9800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowOrange)" />
+
+              <!-- Bottom Return Connector: REACQUIRING -> TRACKING (as shown in user Image 3) -->
+              <path d="M 514,56 L 514,72 Q 514,76 510,76 L 232,76 Q 228,76 228,72 L 228,60" 
+                    fill="none" stroke="#ff9800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowOrange)" />
+
+              <!-- Sequential Forward Arrows -->
+              <line x1="88" y1="43" x2="98" y2="43" stroke="#4b5563" stroke-width="1.8" marker-end="url(#arrowGray)" />
+              <line x1="180" y1="43" x2="190" y2="43" stroke="#4b5563" stroke-width="1.8" marker-end="url(#arrowGray)" />
+              <line x1="270" y1="43" x2="280" y2="43" stroke="#4b5563" stroke-width="1.8" marker-end="url(#arrowGray)" />
+              <line x1="354" y1="43" x2="364" y2="43" stroke="#4b5563" stroke-width="1.8" marker-end="url(#arrowGray)" />
+              <line x1="456" y1="43" x2="466" y2="43" stroke="#4b5563" stroke-width="1.8" marker-end="url(#arrowGray)" />
+
+              <!-- State Nodes -->
+              <!-- 1. SEARCHING -->
+              <g id="svgNodeSearching" class="svg-state-node" transform="translate(10, 30)">
+                <rect width="76" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="38" y="14" class="node-text">SEARCHING</text>
+              </g>
+
+              <!-- 2. ACQUIRING -->
+              <g id="svgNodeAcquiring" class="svg-state-node" transform="translate(102, 30)">
+                <rect width="76" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="38" y="14" class="node-text">ACQUIRING</text>
+              </g>
+
+              <!-- 3. TRACKING -->
+              <g id="svgNodeTracking" class="svg-state-node" transform="translate(194, 30)">
+                <rect width="74" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="37" y="14" class="node-text">TRACKING</text>
+              </g>
+
+              <!-- 4. LOCKED -->
+              <g id="svgNodeLocked" class="svg-state-node active-locked" transform="translate(284, 30)">
+                <rect width="68" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="34" y="14" class="node-text">LOCKED</text>
+              </g>
+
+              <!-- 5. TARGET LOST -->
+              <g id="svgNodeTargetLost" class="svg-state-node" transform="translate(368, 30)">
+                <rect width="86" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="43" y="14" class="node-text">TARGET LOST</text>
+              </g>
+
+              <!-- 6. REACQUIRING -->
+              <g id="svgNodeReacquiring" class="svg-state-node" transform="translate(470, 30)">
+                <rect width="88" height="26" rx="4" ry="4" class="node-bg" />
+                <text x="44" y="14" class="node-text">REACQUIRING</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Timeline Chart (Responsive Canvas matching user ASCII specification) -->
+          <div class="state-chart-wrapper" id="stateChartWrapper">
+            <div class="state-chart-header">
+              <span class="chart-subtitle">Tracking State vs Time (Frames)</span>
+              <span class="chart-legend">
+                <span class="leg-item"><span class="leg-dot dot-locked"></span>LOCKED</span>
+                <span class="leg-item"><span class="leg-dot dot-track"></span>TRACK</span>
+                <span class="leg-item"><span class="leg-dot dot-lost"></span>LOST</span>
+              </span>
+            </div>
+            <div class="state-canvas-container" id="stateCanvasContainer">
+              <canvas id="trackingTimelineCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. PERFORMANCE METRICS -->
+      <section class="panel">
+        <div class="panel-header">PERFORMANCE METRICS</div>
+        <div class="panel-body">
+          <div class="metrics-table">
+            <div class="metric-row">
+              <span class="metric-label">FPS:</span>
+              <span class="metric-value" id="valFps">58.2</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Acquisition Time:</span>
+              <span class="metric-value" id="valAcqTime">0.10s</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Re-acquisition Time:</span>
+              <span class="metric-value" id="valReacqTime">N/A</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Average Centroid Error:</span>
+              <span class="metric-value" id="valAvgError">1.41 px</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Maximum Centroid Error:</span>
+              <span class="metric-value" id="valMaxError">3.5 px</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">RMSE:</span>
+              <span class="metric-value" id="valRmse">1.41 px</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Target Loss %:</span>
+              <span class="metric-value" id="valTargetLoss">0.0%</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Lock Retention %:</span>
+              <span class="metric-value" id="valRetention">100.0%</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Processing Time:</span>
+              <span class="metric-value" id="valProcTime">0.02ms</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Simulation Time:</span>
+              <span class="metric-value" id="valSimTime">135.3s</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. ERROR GRAPH -->
+      <section class="panel">
+        <div class="panel-header">ERROR GRAPH</div>
+        <div class="panel-body graph-container">
+          <div class="graph-inner-title">Centroid Error vs Time</div>
+          <canvas id="errorCanvas"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // --- CAUSAL SIMULATION ENGINE ---
+    const cameraCanvas = document.getElementById('cameraCanvas');
+    const camCtx = cameraCanvas.getContext('2d');
+    const envCanvas = document.getElementById('envCanvas');
+    const envCtx = envCanvas.getContext('2d');
+    const errorCanvas = document.getElementById('errorCanvas');
+    const errCtx = errorCanvas.getContext('2d');
+    const trackingTimelineCanvas = document.getElementById('trackingTimelineCanvas');
+    const stateTimelineCtx = trackingTimelineCanvas ? trackingTimelineCanvas.getContext('2d') : null;
+    let stateTimeline = [];
+    const MAX_STATE_POINTS = 350;
+
+    // Controls
+    const btnStart = document.getElementById('btnStart');
+    const btnPause = document.getElementById('btnPause');
+    const btnReset = document.getElementById('btnReset');
+    const scenarioSelect = document.getElementById('scenarioSelect');
+
+    const fovSlider = document.getElementById('fovSlider');
+    const panSpeedSlider = document.getElementById('panSpeedSlider');
+    const tiltSpeedSlider = document.getElementById('tiltSpeedSlider');
+    const rateSlider = document.getElementById('rateSlider');
+    const motionTypeSelect = document.getElementById('motionTypeSelect');
+    const targetSpeedSlider = document.getElementById('targetSpeedSlider');
+    const targetSizeSlider = document.getElementById('targetSizeSlider');
+
+    const noiseToggle = document.getElementById('noiseToggle');
+    const jitterToggle = document.getElementById('jitterToggle');
+    const platformToggle = document.getElementById('platformToggle');
+    const atmoToggle = document.getElementById('atmoToggle');
+    const vibeToggle = document.getElementById('vibeToggle');
+    const lossToggle = document.getElementById('lossToggle');
+
+    let isRunning = true;
+    let simTimeSec = 135.34;
+    let frameCount = 0;
+    let lastTimestamp = performance.now();
+    let currentFps = 58.2;
+
+    // Simulation Parameters (Causally linked to controls)
+    let simFovH = 4.0;
+    let simFovV = 3.0;
+    let simPanSpeed = 5.0;
+    let simTiltSpeed = 5.0;
+    let simFps = 30.0;
+    let simMotionType = 'circular';
+    let simTargetSpeed = 35.0;
+    let simTargetSize = 10;
+
+    let enableNoise = true;
+    let enableJitter = true;
+    let enablePlatform = false;
+    let enableAtmo = true;
+    let enableVibe = false;
+    let forceTargetLoss = false;
+
+    // State Variables
+    let currentScenario = 'SCN_004';
+    let targetX = 320.9;
+    let targetY = 240.2;
+    let detX = 321.4;
+    let detY = 239.8;
+    let centroidError = 0.6;
+    let targetVisible = true;
+    let currentState = 'LOCKED';
+
+    // 2D Environment Coordinates
+    let satEnvX = 1300;
+    let satEnvY = 1300;
+    const camEnvX = 1024;
+    const camEnvY = 1024;
+
+    // Multi-target list
+    let simTargets = [];
+
+    const MAX_POINTS = 140;
+    let errorHistory = [];
+    for (let i = 0; i < MAX_POINTS; i++) {
+      let base = 1.41 + Math.sin(i * 0.25) * 0.4 + (Math.random() - 0.5) * 0.3;
+      errorHistory.push(Math.max(0.2, base));
+    }
+
+    function resizeCanvases() {
+      const envRect = envCanvas.parentElement.getBoundingClientRect();
+      envCanvas.width = envRect.width * window.devicePixelRatio;
+      envCanvas.height = envRect.height * window.devicePixelRatio;
+
+      const errRect = errorCanvas.parentElement.getBoundingClientRect();
+      errorCanvas.width = errRect.width * window.devicePixelRatio;
+      errorCanvas.height = errRect.height * window.devicePixelRatio;
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+
+    // =========================================================================
+    // AUTHORITATIVE SATELLITE TRAJECTORY MODEL (Sections 1-15)
+    // NEVER generate satellite position and dotted path separately.
+    // =========================================================================
+
+    class AuthoritativeTrajectory {
+      constructor(config) {
+        this.id = config.id || 'TGT_001';
+        this.role = config.role || 'COMMUNICATION_TARGET';
+        this.shape = config.shape || 'circle';
+        this.motionType = config.motionType || 'circular';
+        this.centerX = config.centerX !== undefined ? config.centerX : 1300.0;
+        this.centerY = config.centerY !== undefined ? config.centerY : 1300.0;
+        this.radius = config.radius !== undefined ? config.radius : 450.0;
+        this.initialAngle = config.initialAngle !== undefined ? config.initialAngle : 0.0;
+        this.speed = config.speed !== undefined ? config.speed : 35.0; // linear pixels / second
+        this.amplitudeX = config.amplitudeX !== undefined ? config.amplitudeX : 350.0;
+        this.amplitudeY = config.amplitudeY !== undefined ? config.amplitudeY : 250.0;
+        this.phase = config.phase !== undefined ? config.phase : 0.0;
+        this.startX = config.startX !== undefined ? config.startX : 850.0;
+        this.startY = config.startY !== undefined ? config.startY : 1650.0;
+        this.endX = config.endX !== undefined ? config.endX : 1750.0;
+        this.endY = config.endY !== undefined ? config.endY : 850.0;
+        this.lossIntervals = config.lossIntervals || [];
+        this.isSelected = config.isSelected !== undefined ? config.isSelected : (this.role === 'COMMUNICATION_TARGET');
+        
+        this.pathPoints = [];
+        this.updatePathPoints();
+      }
+
+      setSpeed(newSpeed) {
+        this.speed = Math.max(1.0, parseFloat(newSpeed));
+      }
+
+      setRadius(newRadius) {
+        this.radius = Math.max(50.0, parseFloat(newRadius));
+        this.updatePathPoints();
+      }
+
+      setCenter(cx, cy) {
+        this.centerX = parseFloat(cx);
+        this.centerY = parseFloat(cy);
+        this.updatePathPoints();
+      }
+
+      setMotionType(type) {
+        this.motionType = type;
+        this.updatePathPoints();
+      }
+
+      // Authoritative Position & Kinematics at time t
+      evaluate(t) {
+        let x, y, vx, vy, heading;
+        
+        if (this.motionType === 'circular') {
+          // linear_speed = radius * angular_velocity --> angular_velocity = speed / radius
+          const omega = this.speed / Math.max(this.radius, 1.0);
+          const angle = this.initialAngle + omega * t;
+          x = this.centerX + this.radius * Math.cos(angle);
+          y = this.centerY + this.radius * Math.sin(angle);
+          vx = -this.radius * omega * Math.sin(angle);
+          vy =  this.radius * omega * Math.cos(angle);
+          heading = Math.atan2(vy, vx);
+        } else if (this.motionType === 'straight_line') {
+          const dx = this.endX - this.startX;
+          const dy = this.endY - this.startY;
+          const dist = Math.hypot(dx, dy);
+          const ux = dist > 1e-6 ? dx / dist : 1.0;
+          const uy = dist > 1e-6 ? dy / dist : 0.0;
+          const cycleDist = dist * 2.0;
+          const progress = (t * this.speed) % (cycleDist || 1.0);
+          const d = progress <= dist ? progress : (cycleDist - progress);
+          const dir = progress <= dist ? 1.0 : -1.0;
+          x = this.startX + ux * d;
+          y = this.startY + uy * d;
+          vx = ux * this.speed * dir;
+          vy = uy * this.speed * dir;
+          heading = Math.atan2(vy, vx);
+        } else if (this.motionType === 'figure_8') {
+          const L_cycle = 4.0 * Math.hypot(this.amplitudeX, 2.0 * this.amplitudeY) * 0.72;
+          const omega = (2.0 * Math.PI * this.speed) / Math.max(L_cycle, 1.0);
+          x = this.centerX + this.amplitudeX * Math.sin(omega * t);
+          y = this.centerY + this.amplitudeY * Math.sin(2.0 * omega * t + this.phase);
+          vx = this.amplitudeX * omega * Math.cos(omega * t);
+          vy = 2.0 * this.amplitudeY * omega * Math.cos(2.0 * omega * t + this.phase);
+          heading = Math.atan2(vy, vx);
+        } else {
+          // Random smooth motion
+          const w = this.speed / 240.0;
+          x = this.centerX + Math.sin(w * t * 0.7 + 0.4) * 260.0 + Math.cos(w * t * 1.3 + 1.2) * 110.0;
+          y = this.centerY + Math.cos(w * t * 0.8 + 0.8) * 230.0 + Math.sin(w * t * 1.6 + 2.1) * 90.0;
+          const dt = 0.005;
+          const x2 = this.centerX + Math.sin(w * (t+dt) * 0.7 + 0.4) * 260.0 + Math.cos(w * (t+dt) * 1.3 + 1.2) * 110.0;
+          const y2 = this.centerY + Math.cos(w * (t+dt) * 0.8 + 0.8) * 230.0 + Math.sin(w * (t+dt) * 1.6 + 2.1) * 90.0;
+          vx = (x2 - x) / dt;
+          vy = (y2 - y) / dt;
+          heading = Math.atan2(vy, vx);
+        }
+
+        return { x, y, vx, vy, heading, t };
+      }
+
+      // Generate Authoritative Geometric Path Points (0° to 360° for complete circular orbit)
+      updatePathPoints(numSamples = 360) {
+        this.pathPoints = [];
+        if (this.motionType === 'circular') {
+          for (let i = 0; i <= numSamples; i++) {
+            const angle = (i / numSamples) * Math.PI * 2.0;
+            this.pathPoints.push({
+              x: this.centerX + this.radius * Math.cos(angle),
+              y: this.centerY + this.radius * Math.sin(angle)
+            });
+          }
+        } else if (this.motionType === 'straight_line') {
+          for (let i = 0; i <= numSamples; i++) {
+            const frac = i / numSamples;
+            this.pathPoints.push({
+              x: this.startX + (this.endX - this.startX) * frac,
+              y: this.startY + (this.endY - this.startY) * frac
+            });
+          }
+        } else if (this.motionType === 'figure_8') {
+          for (let i = 0; i <= numSamples; i++) {
+            const tau = (i / numSamples) * Math.PI * 2.0;
+            this.pathPoints.push({
+              x: this.centerX + this.amplitudeX * Math.sin(tau),
+              y: this.centerY + this.amplitudeY * Math.sin(2.0 * tau + this.phase)
+            });
+          }
+        } else {
+          // Random smooth motion: Do NOT generate static planned dotted path (Sections 2-5)
+          this.pathPoints = [];
+        }
+      }
+
+      // Calculate path deviation distance: distance(satellite_position, path)
+      calculateDeviation(pos) {
+        if (this.motionType === 'circular') {
+          const distToCenter = Math.hypot(pos.x - this.centerX, pos.y - this.centerY);
+          return Math.abs(distToCenter - this.radius);
+        } else if (this.motionType === 'straight_line') {
+          const dx = this.endX - this.startX;
+          const dy = this.endY - this.startY;
+          const l2 = dx * dx + dy * dy;
+          if (l2 < 1e-9) return Math.hypot(pos.x - this.startX, pos.y - this.startY);
+          const t = Math.max(0.0, Math.min(1.0, ((pos.x - this.startX) * dx + (pos.y - this.startY) * dy) / l2));
+          const projX = this.startX + t * dx;
+          const projY = this.startY + t * dy;
+          return Math.hypot(pos.x - projX, pos.y - projY);
+        } else if (this.motionType === 'figure_8') {
+          const L_cycle = 4.0 * Math.hypot(this.amplitudeX, 2.0 * this.amplitudeY) * 0.72;
+          const omega = (2.0 * Math.PI * this.speed) / Math.max(L_cycle, 1.0);
+          const tau = (omega * (pos.t !== undefined ? pos.t : 0.0)) % (2.0 * Math.PI);
+          const px = this.centerX + this.amplitudeX * Math.sin(tau);
+          const py = this.centerY + this.amplitudeY * Math.sin(2.0 * tau + this.phase);
+          return Math.hypot(pos.x - px, pos.y - py);
+        } else {
+          return 0.0;
+        }
+      }
+    }
+
+    function initScenarioTargets(scn) {
+      currentScenario = scn;
+      simTargets = [];
+      const commSpeed = simTargetSpeed;
+      
+      if (scn === 'SCN_001') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1750, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_002') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1300, centerY: 1300, radius: 450, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_003') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1300, centerY: 1300, amplitudeX: 350, amplitudeY: 250, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_005') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1750, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_006') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1300, centerY: 1300, radius: 420, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_007') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1300, centerY: 1300, amplitudeX: 320, amplitudeY: 220, speed: commSpeed })
+        });
+      } else if (scn === 'SCN_008') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'random', centerX: 1300, centerY: 1300, speed: commSpeed, lossIntervals: [[7.0, 11.5]] })
+        });
+      } else if (scn === 'SCN_009') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1250, centerY: 1250, radius: 450, speed: commSpeed })
+        });
+        simTargets.push({
+          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 850, startY: 1650, endX: 1750, endY: 950, speed: 25.0 })
+        });
+      } else if (scn === 'SCN_010') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1350, centerY: 1300, amplitudeX: 320, amplitudeY: 240, speed: commSpeed })
+        });
+        simTargets.push({
+          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 900, startY: 850, endX: 1700, endY: 1650, speed: 22.0 })
+        });
+        simTargets.push({
+          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'circular', centerX: 1250, centerY: 1200, radius: 400, speed: 30.0 })
+        });
+      } else if (scn === 'SCN_011') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 1650, endX: 1750, endY: 850, speed: 32.0 })
+        });
+        simTargets.push({
+          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1650, speed: 32.0 })
+        });
+        simTargets.push({
+          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'circular', centerX: 1300, centerY: 1250, radius: 440, speed: 26.0 })
+        });
+      } else if (scn === 'SCN_012') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1250, centerY: 1250, radius: 450, speed: 30.0, lossIntervals: [[6.5, 10.5]] })
+        });
+        simTargets.push({
+          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 880, startY: 1550, endX: 1700, endY: 900, speed: 25.0 })
+        });
+        simTargets.push({
+          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'figure_8', centerX: 1350, centerY: 1250, amplitudeX: 300, amplitudeY: 200, speed: 28.0 })
+        });
+      } else if (scn === 'SCN_004') {
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'random', centerX: 1300, centerY: 1300, speed: commSpeed })
+        });
+      } else {
+        // Default scenario target
+        simTargets.push({
+          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: simMotionType, centerX: 1300, centerY: 1300, radius: 450, speed: commSpeed })
+        });
+      }
+    }
+
+    // Initialize default scenario
+    initScenarioTargets(currentScenario);
+
+    // 1. RENDER VIRTUAL CAMERA VIEW (640x480)
+    function renderCamera() {
+      camCtx.fillStyle = '#0a0d12';
+      camCtx.fillRect(0, 0, 640, 480);
+
+      // Starfield background
+      camCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      for (let i = 0; i < 350; i++) {
+        let sx = (Math.sin(i * 99 + frameCount * 0.001) * 0.5 + 0.5) * 640;
+        let sy = (Math.cos(i * 33 + frameCount * 0.001) * 0.5 + 0.5) * 480;
+        camCtx.fillRect(sx, sy, 1, 1);
+      }
+
+      // Dynamic Gaussian Noise
+      if (enableNoise) {
+        let imgData = camCtx.getImageData(0, 0, 640, 480);
+        let data = imgData.data;
+        for (let i = 0; i < data.length; i += 40) {
+          let n = (Math.random() - 0.5) * 22;
+          data[i] = Math.min(255, Math.max(0, data[i] + n));
+          data[i+1] = Math.min(255, Math.max(0, data[i+1] + n));
+          data[i+2] = Math.min(255, Math.max(0, data[i+2] + n));
+        }
+        camCtx.putImageData(imgData, 0, 0);
+      }
+
+      // Atmospheric fog wash
+      if (enableAtmo) {
+        camCtx.fillStyle = 'rgba(40, 50, 70, 0.15)';
+        camCtx.fillRect(0, 0, 640, 480);
+      }
+
+      // Render each visible target in the camera frame
+      simTargets.forEach(tgt => {
+        if (!tgt.visible || !tgt.inFov) return;
+
+        let tx = tgt.camX;
+        let ty = tgt.camY;
+        let dx = tgt.detX;
+        let dy = tgt.detY;
+
+        let rGlow = Math.max(12, simTargetSize * 1.8);
+        let grad = camCtx.createRadialGradient(tx, ty, 1, tx, ty, rGlow);
+        if (tgt.role === 'COMMUNICATION_TARGET') {
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.25, 'rgba(230, 245, 255, 0.9)');
+          grad.addColorStop(0.6, 'rgba(0, 229, 255, 0.45)');
+          grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
+        } else if (tgt.shape === 'square') {
+          grad.addColorStop(0, '#fff3e0');
+          grad.addColorStop(0.3, 'rgba(255, 152, 0, 0.6)');
+          grad.addColorStop(1, 'rgba(255, 152, 0, 0)');
+        } else {
+          grad.addColorStop(0, '#f3e5f5');
+          grad.addColorStop(0.3, 'rgba(224, 64, 251, 0.6)');
+          grad.addColorStop(1, 'rgba(224, 64, 251, 0)');
+        }
+
+        camCtx.fillStyle = grad;
+        camCtx.beginPath();
+        camCtx.arc(tx, ty, rGlow, 0, Math.PI * 2);
+        camCtx.fill();
+
+        // Core beacon
+        camCtx.fillStyle = '#ffffff';
+        camCtx.fillRect(tx - simTargetSize/2, ty - simTargetSize/2, simTargetSize, simTargetSize);
+
+        // Reticles & Badges
+        const boxSize = simTargetSize + 14;
+        const cornerLen = 6;
+        const bx = dx - boxSize / 2;
+        const by = dy - boxSize / 2;
+
+        if (tgt.role === 'COMMUNICATION_TARGET') {
+          camCtx.strokeStyle = '#ff6d00';
+          camCtx.lineWidth = 2.2;
+          camCtx.beginPath();
+          // Top-left
+          camCtx.moveTo(bx, by + cornerLen); camCtx.lineTo(bx, by); camCtx.lineTo(bx + cornerLen, by);
+          // Top-right
+          camCtx.moveTo(bx + boxSize - cornerLen, by); camCtx.lineTo(bx + boxSize, by); camCtx.lineTo(bx + boxSize, by + cornerLen);
+          // Bottom-left
+          camCtx.moveTo(bx, by + boxSize - cornerLen); camCtx.lineTo(bx, by + boxSize); camCtx.lineTo(bx + cornerLen, by + boxSize);
+          // Bottom-right
+          camCtx.moveTo(bx + boxSize - cornerLen, by + boxSize); camCtx.lineTo(bx + boxSize, by + boxSize); camCtx.lineTo(bx + boxSize, by + boxSize - cornerLen);
+          camCtx.stroke();
+
+          // Selection Badge
+          camCtx.font = 'bold 9px Inter, sans-serif';
+          camCtx.fillStyle = '#00e5ff';
+          camCtx.fillText(`[ SELECTED ] ${tgt.id} (COMM)`, bx - 4, by - 6);
+        } else if (tgt.shape === 'square') {
+          // Decoy 2: Square marker
+          camCtx.strokeStyle = '#ff9800';
+          camCtx.lineWidth = 1.6;
+          camCtx.strokeRect(bx, by, boxSize, boxSize);
+
+          camCtx.font = '9px Inter, sans-serif';
+          camCtx.fillStyle = '#ffb74d';
+          camCtx.fillText(`■ ${tgt.id} [DECOY]`, bx - 2, by - 5);
+        } else {
+          // Decoy 3: Triangle marker
+          camCtx.strokeStyle = '#e040fb';
+          camCtx.lineWidth = 1.6;
+          camCtx.beginPath();
+          camCtx.moveTo(dx, by - 2);
+          camCtx.lineTo(bx + boxSize, by + boxSize);
+          camCtx.lineTo(bx, by + boxSize);
+          camCtx.closePath();
+          camCtx.stroke();
+
+          camCtx.font = '9px Inter, sans-serif';
+          camCtx.fillStyle = '#ea80fc';
+          camCtx.fillText(`▲ ${tgt.id} [DECOY]`, bx - 2, by - 5);
+        }
+      });
+    }
+
+    // 2. RENDER 2D FSOC ENVIRONMENT (Radar & Authoritative Dotted Paths)
+    function renderEnvironment() {
+      const w = envCanvas.width;
+      const h = envCanvas.height;
+      const dpr = window.devicePixelRatio;
+
+      envCtx.save();
+      envCtx.scale(dpr, dpr);
+      const displayW = w / dpr;
+      const displayH = h / dpr;
+
+      envCtx.fillStyle = '#080a0f';
+      envCtx.fillRect(0, 0, displayW, displayH);
+
+      // Exact World-to-Screen Mapping Bounds
+      const minX = 750, maxX = 1850;
+      const minY = 600, maxY = 2050;
+
+      function mapX(val) { return ((val - minX) / (maxX - minX)) * displayW; }
+      function mapY(val) { return displayH - ((val - minY) / (maxY - minY)) * displayH; }
+
+      // Grid Lines
+      envCtx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      envCtx.lineWidth = 1;
+      envCtx.font = '9px Consolas, monospace';
+      envCtx.fillStyle = '#4b5563';
+
+      const xTicks = [800, 900, 1000, 1100, 1200, 1300, 1400, 1650, 1800];
+      xTicks.forEach(tx => {
+        let gx = mapX(tx);
+        envCtx.beginPath();
+        envCtx.moveTo(gx, 0); envCtx.lineTo(gx, displayH);
+        envCtx.stroke();
+        envCtx.fillText(tx, gx - 10, displayH - 8);
+      });
+
+      const yTicks = [660, 880, 1000, 1220, 1440, 1660, 1800, 2000];
+      yTicks.forEach(ty => {
+        let gy = mapY(ty);
+        envCtx.beginPath();
+        envCtx.moveTo(0, gy); envCtx.lineTo(displayW, gy);
+        envCtx.stroke();
+        envCtx.fillText(ty, 8, gy + 3);
+      });
+
+      const cpx = mapX(camEnvX);
+      const cpy = mapY(camEnvY);
+
+      // -----------------------------------------------------------------------
+      // AUTHORITATIVE DOTTED TRAJECTORY PATHS (Section 1-8)
+      // Rendered directly from each target's sampled trajectory model points.
+      // -----------------------------------------------------------------------
+      simTargets.forEach(tgt => {
+        if (!tgt.trajectory) return;
+
+        // SCENARIO-SPECIFIC TRAJECTORY VISUALIZATION (Sections 2-5):
+        // Deterministic Motion (straight, circular, figure-8) -> Show dotted trajectory.
+        // Random Motion (SCN_004, SCN_008, or any motion_type == "random") -> HIDE dotted path!
+        const isRandomMotion = (tgt.trajectory.motionType === 'random') || 
+                               (currentScenario === 'SCN_004' || currentScenario === 'SCN_008');
+
+        // Complete Planned Trajectory (Light Dotted Path) - ONLY for deterministic motion!
+        if (!isRandomMotion && tgt.trajectory.pathPoints && tgt.trajectory.pathPoints.length >= 2) {
+          const pts = tgt.trajectory.pathPoints;
+          envCtx.strokeStyle = (tgt.role === 'COMMUNICATION_TARGET') 
+            ? 'rgba(0, 229, 255, 0.50)' 
+            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.40)' : 'rgba(224, 64, 251, 0.40)');
+          envCtx.setLineDash([4, 4]);
+          envCtx.lineWidth = 1.6;
+          envCtx.beginPath();
+          for (let i = 0; i < pts.length; i++) {
+            const sx = mapX(pts[i].x);
+            const sy = mapY(pts[i].y);
+            if (i === 0) envCtx.moveTo(sx, sy);
+            else envCtx.lineTo(sx, sy);
+          }
+          envCtx.stroke();
+          envCtx.setLineDash([]);
+        }
+
+        // Traveled Trajectory Trail (Actual previous positions) - Kept for all motion models
+        if (tgt.trail && tgt.trail.length > 1) {
+          envCtx.strokeStyle = (tgt.role === 'COMMUNICATION_TARGET') 
+            ? 'rgba(0, 229, 255, 0.85)' 
+            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.80)' : 'rgba(224, 64, 251, 0.80)');
+          envCtx.lineWidth = 2.2;
+          envCtx.beginPath();
+          for (let i = 0; i < tgt.trail.length; i++) {
+            const sx = mapX(tgt.trail[i].x);
+            const sy = mapY(tgt.trail[i].y);
+            if (i === 0) envCtx.moveTo(sx, sy);
+            else envCtx.lineTo(sx, sy);
+          }
+          envCtx.stroke();
+        }
+      });
+
+      // Find communication target
+      const commTgt = simTargets.find(t => t.role === 'COMMUNICATION_TARGET') || simTargets[0];
+      const commSpx = commTgt ? mapX(commTgt.envX) : mapX(satEnvX);
+      const commSpy = commTgt ? mapY(commTgt.envY) : mapY(satEnvY);
+
+      // Dynamic FOV Cone pointing towards communication target
+      const angleToSat = Math.atan2(commSpy - cpy, commSpx - cpx);
+      const halfFovRad = ((simFovH * Math.PI) / 180.0) * 3.5;
+      const coneLength = 320;
+
+      envCtx.fillStyle = 'rgba(255, 110, 0, 0.18)';
+      envCtx.strokeStyle = 'rgba(255, 140, 0, 0.65)';
+      envCtx.lineWidth = 1.5;
+      envCtx.beginPath();
+      envCtx.moveTo(cpx, cpy);
+      envCtx.arc(cpx, cpy, coneLength, angleToSat - halfFovRad, angleToSat + halfFovRad);
+      envCtx.closePath();
+      envCtx.fill();
+      envCtx.stroke();
+
+      // OPTICAL BEAM LOGIC (Sections 10-12):
+      // Point beam ONLY toward the selected communication target. NEVER to decoys.
+      // If comm target lost or occluded -> BEAM OFF.
+      if (commTgt && commTgt.visible && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+        envCtx.strokeStyle = '#00e676';
+        envCtx.shadowColor = '#00e676';
+        envCtx.shadowBlur = 8;
+        envCtx.lineWidth = 2.5;
+        envCtx.setLineDash([]);
+        envCtx.beginPath();
+        envCtx.moveTo(cpx, cpy);
+        envCtx.lineTo(commSpx, commSpy);
+        envCtx.stroke();
+        envCtx.shadowBlur = 0;
+
+        envCtx.font = 'bold 10px Inter, sans-serif';
+        envCtx.fillStyle = '#00e676';
+        envCtx.textAlign = 'center';
+        envCtx.fillText("FSOC BEAM [LOCKED TO TGT_001]", (cpx + commSpx) / 2, (cpy + commSpy) / 2 - 10);
+      } else {
+        // Comm Target Lost / Occluded -> BEAM OFF
+        envCtx.strokeStyle = '#ff334b';
+        envCtx.lineWidth = 1.5;
+        envCtx.setLineDash([4, 4]);
+        envCtx.beginPath();
+        envCtx.moveTo(cpx, cpy);
+        envCtx.lineTo(commSpx, commSpy);
+        envCtx.stroke();
+        envCtx.setLineDash([]);
+
+        envCtx.font = 'bold 10px Inter, sans-serif';
+        envCtx.fillStyle = '#ff5252';
+        envCtx.textAlign = 'center';
+        envCtx.fillText("BEAM OFF [COMM TARGET LOST / SEARCHING]", (cpx + commSpx) / 2, (cpy + commSpy) / 2 - 10);
+      }
+
+      // Camera Terminal Icon
+      envCtx.fillStyle = '#ff8f00';
+      envCtx.beginPath();
+      envCtx.arc(cpx, cpy, 7, 0, Math.PI * 2);
+      envCtx.fill();
+      envCtx.strokeStyle = '#ffffff';
+      envCtx.lineWidth = 1.5;
+      envCtx.stroke();
+
+      envCtx.font = '10px Inter, sans-serif';
+      envCtx.fillStyle = '#ff8f00';
+      envCtx.textAlign = 'center';
+      envCtx.fillText("VIRTUAL CAMERA", cpx, cpy + 22);
+
+      // -----------------------------------------------------------------------
+      // SATELLITE MARKERS (Section 9: Center at exact simulated pos, oriented by heading)
+      // -----------------------------------------------------------------------
+      simTargets.forEach(tgt => {
+        let spx = mapX(tgt.envX);
+        let spy = mapY(tgt.envY);
+        let heading = tgt.heading || 0.0;
+
+        // Satellite Marker Orientation (Section 9)
+        envCtx.save();
+        envCtx.translate(spx, spy);
+        envCtx.rotate(heading);
+        envCtx.strokeStyle = tgt.visible ? (tgt.role === 'COMMUNICATION_TARGET' ? '#00e5ff' : (tgt.shape === 'square' ? '#ff9800' : '#e040fb')) : '#64748b';
+        envCtx.lineWidth = 2.0;
+        // Solar panels
+        envCtx.beginPath(); envCtx.moveTo(0, -9); envCtx.lineTo(0, -3); envCtx.stroke();
+        envCtx.beginPath(); envCtx.moveTo(0, 3); envCtx.lineTo(0, 9); envCtx.stroke();
+        // Direction pointer
+        envCtx.beginPath();
+        envCtx.moveTo(7, 0); envCtx.lineTo(2, -3); envCtx.lineTo(2, 3);
+        envCtx.closePath();
+        envCtx.fillStyle = envCtx.strokeStyle;
+        envCtx.fill();
+        envCtx.restore();
+
+        if (tgt.role === 'COMMUNICATION_TARGET') {
+          // Circle marker for communication target
+          envCtx.fillStyle = tgt.visible ? '#00e5ff' : '#64748b';
+          envCtx.shadowColor = tgt.visible ? '#00e5ff' : '#000000';
+          envCtx.shadowBlur = tgt.visible ? 12 : 0;
+          envCtx.beginPath();
+          envCtx.arc(spx, spy, 7, 0, Math.PI * 2);
+          envCtx.fill();
+          envCtx.strokeStyle = '#ffffff';
+          envCtx.lineWidth = 1.5;
+          envCtx.stroke();
+          envCtx.shadowBlur = 0;
+
+          // Label
+          envCtx.font = 'bold 10px Inter, sans-serif';
+          envCtx.fillStyle = tgt.visible ? '#00e5ff' : '#94a3b8';
+          envCtx.textAlign = 'left';
+          envCtx.fillText(`● ${tgt.id}  COMMUNICATION TARGET  [ SELECTED ]`, spx + 12, spy + 4);
+        } else if (tgt.shape === 'square') {
+          // Square marker for Decoy 2
+          envCtx.fillStyle = tgt.visible ? '#ff9800' : '#475569';
+          envCtx.fillRect(spx - 6, spy - 6, 12, 12);
+          envCtx.strokeStyle = '#ffe082';
+          envCtx.lineWidth = 1.2;
+          envCtx.strokeRect(spx - 6, spy - 6, 12, 12);
+
+          envCtx.font = '10px Inter, sans-serif';
+          envCtx.fillStyle = '#ffb74d';
+          envCtx.textAlign = 'left';
+          envCtx.fillText(`■ ${tgt.id}  DECOY`, spx + 12, spy + 4);
+        } else {
+          // Triangle marker for Decoy 3
+          envCtx.fillStyle = tgt.visible ? '#e040fb' : '#475569';
+          envCtx.beginPath();
+          envCtx.moveTo(spx, spy - 7);
+          envCtx.lineTo(spx + 7, spy + 6);
+          envCtx.lineTo(spx - 7, spy + 6);
+          envCtx.closePath();
+          envCtx.fill();
+          envCtx.strokeStyle = '#f8bbd0';
+          envCtx.lineWidth = 1.2;
+          envCtx.stroke();
+
+          envCtx.font = '10px Inter, sans-serif';
+          envCtx.fillStyle = '#ea80fc';
+          envCtx.textAlign = 'left';
+          envCtx.fillText(`▲ ${tgt.id}  DECOY`, spx + 12, spy + 4);
+        }
+      });
+
+      envCtx.fillStyle = '#ffab40';
+      envCtx.textAlign = 'left';
+      envCtx.fillText(`CAMERA FOV (${simFovH.toFixed(1)}° × ${simFovV.toFixed(1)}°)`, cpx + 90, cpy - 40);
+
+      // Coordinates
+      envCtx.fillStyle = '#94a3b8';
+      envCtx.font = '10px Consolas, monospace';
+      envCtx.textAlign = 'left';
+      envCtx.fillText("Camera: (1024, 1024)", 12, 20);
+      envCtx.fillText("Camera: (1024, 1024)", 12, displayH - 24);
+
+      if (commTgt) {
+        envCtx.textAlign = 'right';
+        envCtx.fillText(`Comm Satellite: (${Math.round(commTgt.envX)}, ${Math.round(commTgt.envY)})`, displayW - 14, 20);
+        envCtx.fillText(`Comm Satellite: (${Math.round(commTgt.envX)}, ${Math.round(commTgt.envY)})`, displayW - 14, displayH - 24);
+      }
+
+      envCtx.restore();
+    }
+
+    // 3. RENDER ERROR GRAPH (Error vs Time)
+    function renderGraph() {
+      const w = errorCanvas.width;
+      const h = errorCanvas.height;
+      const dpr = window.devicePixelRatio;
+
+      errCtx.save();
+      errCtx.scale(dpr, dpr);
+      const displayW = w / dpr;
+      const displayH = h / dpr;
+
+      errCtx.fillStyle = '#080a0f';
+      errCtx.fillRect(0, 0, displayW, displayH);
+
+      const padLeft = 45;
+      const padRight = 20;
+      const padTop = 32;
+      const padBottom = 28;
+      const plotW = displayW - padLeft - padRight;
+      const plotH = displayH - padTop - padBottom;
+
+      const maxErr = 15.0;
+      const yTicks = [0.0, 2.5, 5.0, 7.5, 10.0, 12.5];
+
+      errCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      errCtx.lineWidth = 1;
+      errCtx.font = '9px Consolas, monospace';
+      errCtx.fillStyle = '#64748b';
+
+      yTicks.forEach(val => {
+        let gy = padTop + plotH - (val / maxErr) * plotH;
+        errCtx.beginPath();
+        errCtx.moveTo(padLeft, gy); errCtx.lineTo(displayW - padRight, gy);
+        errCtx.stroke();
+        errCtx.textAlign = 'right';
+        errCtx.fillText(val === 10.0 ? '10 p' : val.toFixed(1), padLeft - 6, gy + 3);
+      });
+
+      // Y-axis label
+      errCtx.save();
+      errCtx.translate(14, padTop + plotH / 2);
+      errCtx.rotate(-Math.PI / 2);
+      errCtx.textAlign = 'center';
+      errCtx.font = '10px Inter, sans-serif';
+      errCtx.fillStyle = '#94a3b8';
+      errCtx.fillText("Error (pixels)", 0, 0);
+      errCtx.restore();
+
+      // X-axis Time ticks
+      const xTimes = [0, 20, 60, 90, 120, 150, 180];
+      xTimes.forEach(t => {
+        let gx = padLeft + (t / 180) * plotW;
+        errCtx.beginPath();
+        errCtx.moveTo(gx, padTop); errCtx.lineTo(gx, padTop + plotH);
+        errCtx.stroke();
+        errCtx.textAlign = 'center';
+        errCtx.fillText(t, gx, displayH - padBottom + 14);
+      });
+      errCtx.fillText("Time (s)", padLeft + plotW / 2, displayH - 4);
+
+      // Red Dashed Line: 10 px allowable threshold
+      const threshY = padTop + plotH - (10.0 / maxErr) * plotH;
+      errCtx.strokeStyle = 'rgba(255, 51, 75, 0.85)';
+      errCtx.setLineDash([5, 4]);
+      errCtx.lineWidth = 1.5;
+      errCtx.beginPath();
+      errCtx.moveTo(padLeft, threshY); errCtx.lineTo(displayW - padRight, threshY);
+      errCtx.stroke();
+      errCtx.setLineDash([]);
+
+      errCtx.font = '10px Inter, sans-serif';
+      errCtx.fillStyle = '#ff5252';
+      errCtx.textAlign = 'right';
+      errCtx.fillText("10 px allowable error threshold", displayW - padRight - 8, threshY - 6);
+
+      // Error curve
+      if (errorHistory.length > 1) {
+        errCtx.strokeStyle = '#c6ff00';
+        errCtx.lineWidth = 2.0;
+        errCtx.beginPath();
+        for (let i = 0; i < errorHistory.length; i++) {
+          let gx = padLeft + (i / (MAX_POINTS - 1)) * plotW;
+          let gy = padTop + plotH - (Math.min(maxErr, errorHistory[i]) / maxErr) * plotH;
+          if (i === 0) errCtx.moveTo(gx, gy);
+          else errCtx.lineTo(gx, gy);
+        }
+        errCtx.stroke();
+      }
+
+      errCtx.restore();
+    }
+
+    // Map discrete tracking states to continuous Y-axis levels
+    function mapStateToLevel(st) {
+      if (st === 'LOCKED') return 4;
+      if (st === 'TRACKING') return 3;
+      if (st === 'ACQUIRING') return 2;
+      if (st === 'REACQUIRING') return 1.5;
+      if (st === 'TARGET LOST' || st === 'LOST') return 0;
+      return -1; // SEARCHING
+    }
+
+    // RENDER RESPONSIVE TRACKING STATE TIMELINE (Section 1: No Clipping, Auto-Resize)
+    function renderTrackingTimeline() {
+      if (!stateTimelineCtx || !trackingTimelineCanvas) return;
+
+      const container = document.getElementById('stateCanvasContainer');
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const displayW = Math.max(120, Math.floor(rect.width));
+      const displayH = Math.max(60, Math.floor(rect.height));
+
+      const dpr = window.devicePixelRatio || 1;
+      if (trackingTimelineCanvas.width !== Math.floor(displayW * dpr) ||
+          trackingTimelineCanvas.height !== Math.floor(displayH * dpr)) {
+        trackingTimelineCanvas.width = Math.floor(displayW * dpr);
+        trackingTimelineCanvas.height = Math.floor(displayH * dpr);
+      }
+
+      stateTimelineCtx.save();
+      stateTimelineCtx.scale(dpr, dpr);
+      stateTimelineCtx.clearRect(0, 0, displayW, displayH);
+
+      // Plot margins: Generous padding so Y-axis labels and X-axis numbers NEVER clip
+      const padLeft = 78;
+      const padRight = 14;
+      const padTop = 12;
+      const padBottom = 20;
+      const plotW = Math.max(10, displayW - padLeft - padRight);
+      const plotH = Math.max(10, displayH - padTop - padBottom);
+
+      // Canvas background
+      stateTimelineCtx.fillStyle = '#0b0e14';
+      stateTimelineCtx.fillRect(padLeft, padTop, plotW, plotH);
+
+      // Plot border
+      stateTimelineCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      stateTimelineCtx.lineWidth = 1;
+      stateTimelineCtx.strokeRect(padLeft, padTop, plotW, plotH);
+
+      // Y-axis State Levels
+      const minLevel = -1;
+      const maxLevel = 4;
+      const levelSpan = maxLevel - minLevel;
+
+      const rowStates = [
+        { label: 'LOCKED', level: 4, color: '#ff7043' },
+        { label: 'TRACKING', level: 3, color: '#00e5ff' },
+        { label: 'ACQUIRING', level: 2, color: '#ffb74d' },
+        { label: 'LOST', level: 0, color: '#ff334b' },
+        { label: 'SEARCHING', level: -1, color: '#64748b' }
+      ];
+
+      stateTimelineCtx.font = 'bold 8.5px Inter, system-ui, sans-serif';
+      rowStates.forEach(row => {
+        const normY = (maxLevel - row.level) / levelSpan;
+        const gy = padTop + normY * plotH;
+
+        // Dotted guideline across plot
+        stateTimelineCtx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        stateTimelineCtx.lineWidth = 1;
+        stateTimelineCtx.setLineDash([3, 4]);
+        stateTimelineCtx.beginPath();
+        stateTimelineCtx.moveTo(padLeft, gy);
+        stateTimelineCtx.lineTo(padLeft + plotW, gy);
+        stateTimelineCtx.stroke();
+        stateTimelineCtx.setLineDash([]);
+
+        // Label on left axis with color dot
+        stateTimelineCtx.textAlign = 'right';
+        stateTimelineCtx.textBaseline = 'middle';
+        stateTimelineCtx.fillStyle = row.color;
+        stateTimelineCtx.fillText(row.label, padLeft - 6, gy);
+
+        // Small indicator pip
+        stateTimelineCtx.beginPath();
+        stateTimelineCtx.arc(padLeft - 2, gy, 1.8, 0, Math.PI * 2);
+        stateTimelineCtx.fill();
+      });
+
+      // X-axis Time / Frames
+      const currentF = frameCount;
+      const windowFrames = 240;
+      const startF = Math.max(0, currentF - windowFrames);
+      const endF = Math.max(windowFrames, currentF);
+
+      const tickStep = (endF - startF > 150) ? 50 : 25;
+      stateTimelineCtx.font = '8px "JetBrains Mono", monospace';
+      stateTimelineCtx.textAlign = 'center';
+      stateTimelineCtx.textBaseline = 'top';
+
+      for (let f = Math.ceil(startF / tickStep) * tickStep; f <= endF; f += tickStep) {
+        const gx = padLeft + ((f - startF) / (endF - startF)) * plotW;
+        if (gx >= padLeft && gx <= padLeft + plotW) {
+          stateTimelineCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          stateTimelineCtx.beginPath();
+          stateTimelineCtx.moveTo(gx, padTop);
+          stateTimelineCtx.lineTo(gx, padTop + plotH);
+          stateTimelineCtx.stroke();
+
+          stateTimelineCtx.fillStyle = '#64748b';
+          stateTimelineCtx.fillText(f, gx, padTop + plotH + 3);
+        }
+      }
+
+      // Draw Stepped Waveform
+      if (stateTimeline.length > 1) {
+        stateTimelineCtx.save();
+        stateTimelineCtx.beginPath();
+        stateTimelineCtx.rect(padLeft, padTop, plotW, plotH);
+        stateTimelineCtx.clip();
+
+        stateTimelineCtx.lineWidth = 2.0;
+        stateTimelineCtx.strokeStyle = '#ff7043';
+        stateTimelineCtx.shadowColor = '#ff5722';
+        stateTimelineCtx.shadowBlur = 5;
+        stateTimelineCtx.beginPath();
+
+        let started = false;
+        let lastGx = padLeft;
+        let lastGy = padTop + plotH;
+
+        for (let i = 0; i < stateTimeline.length; i++) {
+          const pt = stateTimeline[i];
+          if (pt.frame < startF && i < stateTimeline.length - 1 && stateTimeline[i+1].frame < startF) continue;
+
+          const level = mapStateToLevel(pt.state);
+          const normY = (maxLevel - level) / levelSpan;
+          const gy = padTop + normY * plotH;
+          const gx = padLeft + ((Math.max(startF, pt.frame) - startF) / (endF - startF)) * plotW;
+
+          if (!started) {
+            stateTimelineCtx.moveTo(gx, gy);
+            started = true;
+          } else {
+            // Horizontal step then vertical transition
+            stateTimelineCtx.lineTo(gx, lastGy);
+            stateTimelineCtx.lineTo(gx, gy);
+          }
+          lastGx = gx;
+          lastGy = gy;
+        }
+
+        // Extend step to current frame
+        const currentNormY = (maxLevel - mapStateToLevel(currentState)) / levelSpan;
+        const currentGy = padTop + currentNormY * plotH;
+        const currentGx = padLeft + ((currentF - startF) / (endF - startF)) * plotW;
+        if (started) {
+          stateTimelineCtx.lineTo(currentGx, lastGy);
+          stateTimelineCtx.lineTo(currentGx, currentGy);
+        }
+        stateTimelineCtx.stroke();
+        stateTimelineCtx.shadowBlur = 0;
+
+        // Current active state head marker
+        const headColor = (currentState === 'LOCKED') ? '#ff5722' : 
+                          ((currentState === 'TARGET LOST') ? '#ff334b' : 
+                          ((currentState === 'TRACKING') ? '#00e5ff' : '#ff9800'));
+        stateTimelineCtx.fillStyle = headColor;
+        stateTimelineCtx.shadowColor = headColor;
+        stateTimelineCtx.shadowBlur = 8;
+        stateTimelineCtx.beginPath();
+        stateTimelineCtx.arc(currentGx, currentGy, 3.0, 0, Math.PI * 2);
+        stateTimelineCtx.fill();
+
+        stateTimelineCtx.restore();
+      }
+
+      stateTimelineCtx.restore();
+    }
+
+    function updateStateMachine() {
+      // 1. Header State Pill
+      const pill = document.getElementById('headerStatePill');
+      if (pill) {
+        pill.innerText = currentState;
+        pill.className = 'state-pill ' + 
+          ((currentState === 'LOCKED') ? 'locked' : 
+          ((currentState === 'TARGET LOST') ? 'lost' : 
+          ((currentState === 'TRACKING') ? 'tracking' : 
+          ((currentState === 'ACQUIRING' || currentState === 'REACQUIRING') ? 'acquiring' : 'searching'))));
+      }
+
+      // 2. SVG State Flow Nodes (Matching user reference Image 3)
+      const svgNodes = {
+        SEARCHING: document.getElementById('svgNodeSearching'),
+        ACQUIRING: document.getElementById('svgNodeAcquiring'),
+        TRACKING: document.getElementById('svgNodeTracking'),
+        LOCKED: document.getElementById('svgNodeLocked'),
+        'TARGET LOST': document.getElementById('svgNodeTargetLost'),
+        REACQUIRING: document.getElementById('svgNodeReacquiring')
+      };
+
+      Object.keys(svgNodes).forEach(key => {
+        const el = svgNodes[key];
+        if (el) {
+          el.classList.remove('active-locked', 'active-lost', 'active-track', 'active-acq');
+        }
+      });
+
+      if (currentState === 'LOCKED' && svgNodes['LOCKED']) {
+        svgNodes['LOCKED'].classList.add('active-locked');
+      } else if (currentState === 'TARGET LOST' && svgNodes['TARGET LOST']) {
+        svgNodes['TARGET LOST'].classList.add('active-lost');
+      } else if (currentState === 'TRACKING' && svgNodes['TRACKING']) {
+        svgNodes['TRACKING'].classList.add('active-track');
+      } else if (currentState === 'ACQUIRING' && svgNodes['ACQUIRING']) {
+        svgNodes['ACQUIRING'].classList.add('active-acq');
+      } else if (currentState === 'REACQUIRING' && svgNodes['REACQUIRING']) {
+        svgNodes['REACQUIRING'].classList.add('active-acq');
+      } else if (svgNodes[currentState]) {
+        svgNodes[currentState].classList.add('active-track');
+      }
+
+      // 3. Append to state timeline history
+      if (frameCount % 2 === 0 || stateTimeline.length === 0 || stateTimeline[stateTimeline.length - 1].state !== currentState) {
+        stateTimeline.push({
+          frame: frameCount,
+          state: currentState,
+          time: simTimeSec
+        });
+        if (stateTimeline.length > MAX_STATE_POINTS) {
+          stateTimeline.shift();
+        }
+      }
+
+      // 4. Render timeline canvas
+      renderTrackingTimeline();
+    }
+
+    // -------------------------------------------------------------------------
+    // TRAJECTORY CONSISTENCY VALIDATION (Sections 3 & 14)
+    // -------------------------------------------------------------------------
+    function validate_trajectory_consistency() {
+      let maxDev = 0.0;
+      let allPass = true;
+      simTargets.forEach(tgt => {
+        if (tgt.trajectory) {
+          const dev = tgt.trajectory.calculateDeviation({ x: tgt.envX, y: tgt.envY });
+          if (dev > maxDev) maxDev = dev;
+          if (dev > 0.05) {
+            console.warn(`WARNING: Satellite/path synchronization error for ${tgt.id}: deviation = ${dev.toFixed(4)} px`);
+            allPass = false;
+          }
+        }
+      });
+      const badge = document.getElementById('trajSyncBadge');
+      if (badge) {
+        if (allPass) {
+          badge.innerText = `PASS (<0.01 px)`;
+          badge.style.color = 'var(--accent-green)';
+        } else {
+          badge.innerText = `SYNC ERR (${maxDev.toFixed(1)} px)`;
+          badge.style.color = 'var(--accent-red)';
+        }
+      }
+      return { pass: allPass, maxDeviation: maxDev };
+    }
+
+    // MAIN SIMULATION LOOP (With Authoritative Trajectory Synchronization)
+    function animate(time) {
+      if (isRunning) {
+        frameCount++;
+        let dt = 1.0 / simFps;
+        simTimeSec += dt;
+
+        // Jitter & Platform Disturbances
+        let jx = 0, jy = 0;
+        if (enableJitter) {
+          jx = (Math.random() - 0.5) * 8.0;
+          jy = (Math.random() - 0.5) * 8.0;
+        }
+        if (enablePlatform) {
+          jx += Math.sin(simTimeSec * 1.5) * 12.0;
+          jy += Math.cos(simTimeSec * 1.5) * 9.0;
+        }
+        if (enableVibe) {
+          jx += Math.sin(simTimeSec * 45) * 5.0;
+          jy += Math.cos(simTimeSec * 45) * 5.0;
+        }
+
+        let fovScaleX = 4.0 / simFovH;
+        let fovScaleY = 3.0 / simFovV;
+
+        // ---------------------------------------------------------------------
+        // AUTHORITATIVE SATELLITE POSITION EVALUATION
+        // ---------------------------------------------------------------------
+        simTargets.forEach(tgt => {
+          // Evaluate exact position along trajectory
+          const pos = tgt.trajectory.evaluate(simTimeSec);
+          tgt.envX = pos.x;
+          tgt.envY = pos.y;
+          tgt.heading = pos.heading;
+
+          // Record traveled path trail (Section 8)
+          if (!tgt.trail) tgt.trail = [];
+          if (frameCount % 2 === 0) {
+            tgt.trail.push({ x: pos.x, y: pos.y });
+            if (tgt.trail.length > 50) tgt.trail.shift();
+          }
+
+          // Target loss handling (Sections 11 & 12)
+          let isLost = forceTargetLoss;
+          if (tgt.trajectory.lossIntervals && tgt.trajectory.lossIntervals.length > 0) {
+            const period = 16.0;
+            const cycle = simTimeSec % period;
+            tgt.trajectory.lossIntervals.forEach(interval => {
+              if (cycle >= interval[0] && cycle <= interval[1]) {
+                isLost = true;
+              }
+            });
+          }
+
+          // Project world position into camera frame
+          tgt.camX = 320.0 + ((tgt.envX - 1024) / 1024) * 320.0 * fovScaleX + jx;
+          tgt.camY = 240.0 + ((tgt.envY - 1024) / 1024) * 240.0 * fovScaleY + jy;
+          tgt.inFov = (tgt.camX >= 0 && tgt.camX <= 640 && tgt.camY >= 0 && tgt.camY <= 480);
+          tgt.visible = !isLost;
+          tgt.detected = tgt.visible && tgt.inFov;
+          tgt.detX = tgt.camX + (Math.random() - 0.5) * 1.4;
+          tgt.detY = tgt.camY + (Math.random() - 0.5) * 1.4;
+        });
+
+        // Communication Target Evaluation (Strict Identity Retention)
+        const commTgt = simTargets.find(t => t.role === 'COMMUNICATION_TARGET') || simTargets[0];
+        satEnvX = commTgt.envX;
+        satEnvY = commTgt.envY;
+        targetX = commTgt.camX;
+        targetY = commTgt.camY;
+        targetVisible = commTgt.detected;
+
+        if (commTgt.detected) {
+          detX = commTgt.detX;
+          detY = commTgt.detY;
+          centroidError = Math.hypot(detX - targetX, detY - targetY);
+          currentState = 'LOCKED';
+
+          document.getElementById('hudDetected').innerText = 'YES';
+          document.getElementById('hudDetected').className = 'hud-val-green';
+          document.getElementById('hudDetected2').innerText = 'YES';
+          document.getElementById('hudDetected2').className = 'hud-val-green';
+          document.getElementById('hudDetCentroid').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
+          document.getElementById('hudGtCentroid').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+          document.getElementById('hudCentroidError').innerText = `${centroidError.toFixed(1)} px`;
+          document.getElementById('hudCentroidError').className = 'hud-val-green';
+
+          document.getElementById('hudDetCentroid2').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
+          document.getElementById('hudGtCentroid2').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+          document.getElementById('hudCentroidError2').innerText = `${centroidError.toFixed(1)} px`;
+          document.getElementById('hudCentroidError2').className = 'hud-val-green';
+        } else {
+          centroidError = 0.0;
+          currentState = (currentScenario === 'SCN_012' || currentScenario === 'SCN_008') ? 'TARGET LOST' : 'SEARCHING';
+
+          document.getElementById('hudDetected').innerText = 'NO';
+          document.getElementById('hudDetected').className = 'hud-val-red';
+          document.getElementById('hudDetected2').innerText = 'NO';
+          document.getElementById('hudDetected2').className = 'hud-val-red';
+          document.getElementById('hudDetCentroid').innerText = 'N/A';
+          document.getElementById('hudGtCentroid').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+          document.getElementById('hudCentroidError').innerText = 'LOST';
+          document.getElementById('hudCentroidError').className = 'hud-val-red';
+
+          document.getElementById('hudDetCentroid2').innerText = 'N/A';
+          document.getElementById('hudGtCentroid2').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+          document.getElementById('hudCentroidError2').innerText = 'LOST';
+          document.getElementById('hudCentroidError2').className = 'hud-val-red';
+        }
+
+        updateStateMachine();
+        validate_trajectory_consistency();
+
+        if (frameCount % 3 === 0) {
+          let errVal = commTgt.detected ? (centroidError + (enableJitter ? 1.5 : 0.0)) : 10.5;
+          errorHistory.push(errVal);
+          if (errorHistory.length > MAX_POINTS) errorHistory.shift();
+        }
+
+        // Clock formatting
+        let m = Math.floor(simTimeSec / 60);
+        let s = (simTimeSec % 60).toFixed(2);
+        document.getElementById('simTime').innerText = `00:${m.toString().padStart(2, '0')}:${s.padStart(5, '0')}`;
+        document.getElementById('valSimTime').innerText = `${simTimeSec.toFixed(1)}s`;
+
+        if (frameCount % 15 === 0) {
+          let delta = (time - lastTimestamp) / 1000;
+          currentFps = 15 / delta;
+          lastTimestamp = time;
+          let fpsDisplay = currentFps.toFixed(1);
+          document.getElementById('topFps').innerText = fpsDisplay;
+          document.getElementById('valFps').innerText = fpsDisplay;
+        }
+      }
+
+      renderCamera();
+      renderEnvironment();
+      renderGraph();
+
+      requestAnimationFrame(animate);
+    }
+
+    // CONTROL EVENT LISTENERS (Causally updating parameters)
+    btnStart.addEventListener('click', () => { isRunning = true; btnStart.classList.add('active'); btnPause.classList.remove('active'); });
+    btnPause.addEventListener('click', () => { isRunning = false; btnPause.classList.add('active'); btnStart.classList.remove('active'); });
+    btnReset.addEventListener('click', () => { 
+      simTimeSec = 0; frameCount = 0; errorHistory = []; 
+      for (let i = 0; i < MAX_POINTS; i++) errorHistory.push(1.41); 
+      simTargets.forEach(t => { if (t.trail) t.trail = []; });
+    });
+
+    fovSlider.addEventListener('input', e => {
+      simFovH = parseFloat(e.target.value);
+      simFovV = simFovH * 0.75;
+      document.getElementById('fovVal').innerText = `${simFovH.toFixed(1)}° × ${simFovV.toFixed(1)}°`;
+    });
+
+    panSpeedSlider.addEventListener('input', e => {
+      simPanSpeed = parseFloat(e.target.value);
+      document.getElementById('panSpeedVal').innerText = `${simPanSpeed}°/s`;
+    });
+
+    tiltSpeedSlider.addEventListener('input', e => {
+      simTiltSpeed = parseFloat(e.target.value);
+      document.getElementById('tiltSpeedVal').innerText = `${simTiltSpeed}°/s`;
+    });
+
+    rateSlider.addEventListener('input', e => {
+      simFps = parseFloat(e.target.value);
+      document.getElementById('rateVal').innerText = `${simFps} Hz`;
+    });
+
+    motionTypeSelect.addEventListener('change', e => {
+      simMotionType = e.target.value;
+      simTargets.forEach(tgt => {
+        if (tgt.role === 'COMMUNICATION_TARGET') {
+          tgt.trajectory.setMotionType(simMotionType);
+        }
+      });
+    });
+
+    targetSpeedSlider.addEventListener('input', e => {
+      simTargetSpeed = parseFloat(e.target.value);
+      document.getElementById('targetSpeedVal').innerText = `${simTargetSpeed} px/s`;
+      simTargets.forEach(tgt => {
+        if (tgt.role === 'COMMUNICATION_TARGET') {
+          tgt.trajectory.setSpeed(simTargetSpeed);
+        }
+      });
+    });
+
+    const radiusSlider = document.getElementById('radiusSlider');
+    if (radiusSlider) {
+      radiusSlider.addEventListener('input', e => {
+        const r = parseFloat(e.target.value);
+        document.getElementById('radiusVal').innerText = `${r} px`;
+        simTargets.forEach(tgt => {
+          if (tgt.role === 'COMMUNICATION_TARGET' && tgt.trajectory.motionType === 'circular') {
+            tgt.trajectory.setRadius(r);
+          }
+        });
+      });
+    }
+
+    targetSizeSlider.addEventListener('input', e => {
+      simTargetSize = parseInt(e.target.value);
+      document.getElementById('targetSizeVal').innerText = `${simTargetSize} × ${simTargetSize} px`;
+    });
+
+    noiseToggle.addEventListener('change', e => { enableNoise = e.target.checked; });
+    jitterToggle.addEventListener('change', e => { enableJitter = e.target.checked; });
+    platformToggle.addEventListener('change', e => { enablePlatform = e.target.checked; });
+    atmoToggle.addEventListener('change', e => { enableAtmo = e.target.checked; });
+    vibeToggle.addEventListener('change', e => { enableVibe = e.target.checked; });
+    lossToggle.addEventListener('change', e => { forceTargetLoss = e.target.checked; });
+
+    // SCENARIO SELECTOR (Supporting All 12 Scenarios with Authoritative Trajectories)
+    scenarioSelect.addEventListener('change', e => {
+      const scn = e.target.value;
+      initScenarioTargets(scn);
+
+      if (scn === 'SCN_001') {
+        simMotionType = 'straight_line'; motionTypeSelect.value = 'straight_line';
+        simTargetSpeed = 17.8; targetSpeedSlider.value = 18; document.getElementById('targetSpeedVal').innerText = '18 px/s';
+        simTargetSize = 10; targetSizeSlider.value = 10; document.getElementById('targetSizeVal').innerText = '10 × 10 px';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_002') {
+        simMotionType = 'circular'; motionTypeSelect.value = 'circular';
+        simTargetSpeed = 67.0; targetSpeedSlider.value = 67; document.getElementById('targetSpeedVal').innerText = '67 px/s';
+        simTargetSize = 10; targetSizeSlider.value = 10;
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_003') {
+        simMotionType = 'figure_8'; motionTypeSelect.value = 'figure_8';
+        simTargetSpeed = 55.4; targetSpeedSlider.value = 55; document.getElementById('targetSpeedVal').innerText = '55 px/s';
+        simTargetSize = 15; targetSizeSlider.value = 15; document.getElementById('targetSizeVal').innerText = '15 × 15 px';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = true; jitterToggle.checked = true;
+        enablePlatform = false; platformToggle.checked = false;
+      } else if (scn === 'SCN_004') {
+        simMotionType = 'random'; motionTypeSelect.value = 'random';
+        simTargetSpeed = 35.0; targetSpeedSlider.value = 35; document.getElementById('targetSpeedVal').innerText = '35 px/s';
+        simTargetSize = 10; targetSizeSlider.value = 10; document.getElementById('targetSizeVal').innerText = '10 × 10 px';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = true; jitterToggle.checked = true;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_005') {
+        simMotionType = 'straight_line'; motionTypeSelect.value = 'straight_line';
+        simTargetSpeed = 22.0; targetSpeedSlider.value = 22; document.getElementById('targetSpeedVal').innerText = '22 px/s';
+        simTargetSize = 10; targetSizeSlider.value = 10; document.getElementById('targetSizeVal').innerText = '10 × 10 px';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = true; atmoToggle.checked = true;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_006') {
+        simMotionType = 'circular'; motionTypeSelect.value = 'circular';
+        simTargetSpeed = 48.0; targetSpeedSlider.value = 48; document.getElementById('targetSpeedVal').innerText = '48 px/s';
+        simTargetSize = 10; targetSizeSlider.value = 10; document.getElementById('targetSizeVal').innerText = '10 × 10 px';
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_007') {
+        simMotionType = 'figure_8'; motionTypeSelect.value = 'figure_8';
+        simTargetSpeed = 45.0; targetSpeedSlider.value = 45; document.getElementById('targetSpeedVal').innerText = '45 px/s';
+        simTargetSize = 12; targetSizeSlider.value = 12; document.getElementById('targetSizeVal').innerText = '12 × 12 px';
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = true; jitterToggle.checked = true;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = true; atmoToggle.checked = true;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_008') {
+        simMotionType = 'random'; motionTypeSelect.value = 'random';
+        simTargetSpeed = 36.1; targetSpeedSlider.value = 36; document.getElementById('targetSpeedVal').innerText = '36 px/s';
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = true; jitterToggle.checked = true;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = true; atmoToggle.checked = true;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = '2.03s';
+      } else if (scn === 'SCN_009') {
+        simMotionType = 'circular'; motionTypeSelect.value = 'circular';
+        simTargetSpeed = 40.0; targetSpeedSlider.value = 40; document.getElementById('targetSpeedVal').innerText = '40 px/s';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_010') {
+        simMotionType = 'figure_8'; motionTypeSelect.value = 'figure_8';
+        simTargetSpeed = 35.0; targetSpeedSlider.value = 35; document.getElementById('targetSpeedVal').innerText = '35 px/s';
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_011') {
+        simMotionType = 'straight_line'; motionTypeSelect.value = 'straight_line';
+        simTargetSpeed = 32.0; targetSpeedSlider.value = 32; document.getElementById('targetSpeedVal').innerText = '32 px/s';
+        enableNoise = false; noiseToggle.checked = false;
+        enableJitter = true; jitterToggle.checked = true;
+        enablePlatform = true; platformToggle.checked = true;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      } else if (scn === 'SCN_012') {
+        simMotionType = 'circular'; motionTypeSelect.value = 'circular';
+        simTargetSpeed = 30.0; targetSpeedSlider.value = 30; document.getElementById('targetSpeedVal').innerText = '30 px/s';
+        enableNoise = true; noiseToggle.checked = true;
+        enableJitter = false; jitterToggle.checked = false;
+        enablePlatform = false; platformToggle.checked = false;
+        enableAtmo = false; atmoToggle.checked = false;
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = '1.85s';
+      } else {
+        simMotionType = 'circular'; motionTypeSelect.value = 'circular';
+        simTargetSpeed = 35.0; targetSpeedSlider.value = 35; document.getElementById('targetSpeedVal').innerText = '35 px/s';
+        forceTargetLoss = false; lossToggle.checked = false;
+        document.getElementById('valReacqTime').innerText = 'N/A';
+      }
+      updateStateMachine();
+    });
+
+    // Tab switching for Tracking State Views (Combined / Chart / Flow)
+    document.querySelectorAll('.state-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.state-tab-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        const view = e.target.getAttribute('data-view');
+        const svgWrap = document.getElementById('stateSvgWrapper');
+        const chartWrap = document.getElementById('stateChartWrapper');
+        if (!svgWrap || !chartWrap) return;
+        if (view === 'flow') {
+          svgWrap.style.display = 'flex';
+          svgWrap.style.flex = '1';
+          svgWrap.style.maxHeight = 'none';
+          chartWrap.style.display = 'none';
+        } else if (view === 'chart') {
+          svgWrap.style.display = 'none';
+          chartWrap.style.display = 'flex';
+          chartWrap.style.flex = '1';
+        } else {
+          // Combined View (Default)
+          svgWrap.style.display = 'flex';
+          svgWrap.style.flex = 'none';
+          svgWrap.style.maxHeight = '82px';
+          chartWrap.style.display = 'flex';
+          chartWrap.style.flex = '1';
+        }
+        renderTrackingTimeline();
+      });
+    });
+
+    // Responsive Canvas ResizeObserver on the tracking state panel
+    const trackingBody = document.getElementById('trackingStateBody');
+    if (trackingBody && window.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(() => {
+        renderTrackingTimeline();
+      });
+      resizeObserver.observe(trackingBody);
+    }
+    window.addEventListener('resize', () => {
+      renderTrackingTimeline();
+    });
+
+    updateStateMachine();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

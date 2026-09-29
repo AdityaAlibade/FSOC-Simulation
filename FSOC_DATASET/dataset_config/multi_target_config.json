@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "target_count": 3,
+  "target_selection_mode": "designated_target",
+  "minimum_target_separation_pixels": 20,
+  "allow_crossing": true,
+  "allow_occlusion": false,
+  "target_loss_enabled": true,
+  "reacquisition_enabled": true,
+  "max_association_distance_pixels": 50
+}

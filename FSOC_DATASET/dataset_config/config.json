@@ -1,0 +1,25 @@
+{
+  "dataset_name": "FSOC Virtual Camera Tracking Dataset",
+  "version": "1.0",
+  "resolution": [
+    640,
+    480
+  ],
+  "fps": 30,
+  "environment": [
+    2000,
+    2000
+  ],
+  "default_fov": [
+    4,
+    3
+  ],
+  "default_target_size": [
+    10,
+    10
+  ],
+  "max_pan_speed": 5,
+  "max_tilt_speed": 5,
+  "duration_per_scenario": 30,
+  "random_seed": 26169
+}

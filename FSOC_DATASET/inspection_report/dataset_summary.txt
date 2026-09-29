@@ -1,0 +1,112 @@
+========================================
+FSOC DATASET INSPECTION REPORT
+========================================
+
+--- 1. STRUCTURE CHECK ---
+Required directories present: 7/7
+README.md exists: True
+
+--- 2. CONFIGURATION CHECK ---
+Dataset Name: FSOC Virtual Camera Tracking Dataset
+Resolution  : [640, 480] (Expected [640, 480])
+FPS         : 30 (Expected 30)
+Environment : [2000, 2000] (Expected [2000, 2000])
+FOV         : [4, 3] (Expected [4, 3])
+Target Size : [10, 10] (Expected [10, 10])
+Max Speeds  : Pan=5 deg/s, Tilt=5 deg/s
+Duration    : 30 sec
+Base Seed   : 26169 (Expected 26169)
+
+--- 3. SCENARIO & SEED CHECK ---
+Scenarios found: 8/8
+  SCN_001: Straight Line + Clear | Motion: straight_line | Seed: 26170 | Target Size: 10px
+  SCN_002: Circular + Gaussian Noise | Motion: circular | Seed: 26171 | Target Size: 10px
+  SCN_003: Figure-8 + Camera Jitter | Motion: figure_8 | Seed: 26172 | Target Size: 15px
+  SCN_004: Random Motion + Platform Motion | Motion: random | Seed: 26173 | Target Size: 10px
+  SCN_005: Straight Line + Fog | Motion: straight_line | Seed: 26174 | Target Size: 12px
+  SCN_006: Circular + Low Light + Noise | Motion: circular | Seed: 26175 | Target Size: 8px
+  SCN_007: Figure-8 + Camera Jitter + Platform Motion | Motion: figure_8 | Seed: 26176 | Target Size: 15px
+  SCN_008: Random Motion + Combined Disturbances + Target Loss/Reacquisition | Motion: random | Seed: 26177 | Target Size: 10px
+
+--- 4. FRAME & VIDEO COUNTS ---
+SCN_001 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_002 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_003 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_004 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_005 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_006 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_007 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+SCN_008 : PNG=900 (Res: 640x480, Gray: True) | Video=900 frames (640x480, 30fps) | Consistency: PASS
+
+TOTAL PNG FRAMES: 7200/7200
+
+--- 5. GROUND TRUTH & MOTION INTEGRITY ---
+  SCN_001: Ground truth valid (900 rows) | Bounds: X=[95, 545], Y=[85, 395] | Max frame-to-frame step: 1.41px
+  SCN_002: Ground truth valid (900 rows) | Bounds: X=[155, 485], Y=[75, 405] | Max frame-to-frame step: 3.16px
+  SCN_003: Ground truth valid (900 rows) | Bounds: X=[134, 506], Y=[113, 368] | Max frame-to-frame step: 17.03px
+  SCN_004: Ground truth valid (900 rows) | Bounds: X=[302, 338], Y=[225, 255] | Max frame-to-frame step: 1.41px
+  SCN_005: Ground truth valid (900 rows) | Bounds: X=[114, 526], Y=[104, 376] | Max frame-to-frame step: 1.41px
+  SCN_006: Ground truth valid (900 rows) | Bounds: X=[176, 464], Y=[96, 384] | Max frame-to-frame step: 2.24px
+  SCN_007: Ground truth valid (900 rows) | Bounds: X=[160, 495], Y=[125, 357] | Max frame-to-frame step: 16.03px
+  SCN_008: Ground truth valid (900 rows) | Bounds: X=[293, 347], Y=[219, 265] | Max frame-to-frame step: 14.87px
+Center Formula Verification: PASS (100% exact)
+Motion Continuity          : PASS (All steps < 35px)
+Image Bounds               : PASS (All visible beacons within 640x480)
+
+--- 6. DISTURBANCE METADATA CHECK ---
+Total disturbance records: 7200/7200
+Noise types represented  : ['none', 'gaussian', 'salt_and_pepper']
+Atmospheric conditions   : ['Clear', 'Fog', 'Low Light', 'Haze', 'Rain']
+Platform motions         : ['none', 'circular', 'linear', 'spiral']
+Max camera jitter observed: X=11.85px, Y=11.16px (Limit +/-20px)
+Max platform sway observed: X=12.00px, Y=10.00px (Limit +/-20px)
+
+--- 7. SCN_008 TARGET LOSS & REACQUISITION ANALYSIS ---
+SCN_008
+Loss Period 1:
+Frames 240–300 (Duration: 61 frames, ~2.03s)
+
+Reacquisition:
+Frame 301
+
+SCN_008
+Loss Period 2:
+Frames 600–660 (Duration: 61 frames, ~2.03s)
+
+Reacquisition:
+Frame 661
+
+Displacement at Reacquisition 1 (Frame 300 -> 301): 7.21px (Continuous)
+Displacement at Reacquisition 2 (Frame 660 -> 661): 4.47px (Continuous)
+Ground truth coordinates continuously tracked throughout target loss periods: PASS
+
+--- 8. GENERATING VISUAL INSPECTION ARTIFACTS ---
+Saved trajectory plot: C:\Users\aliba\Desktop\FSOC\FSOC_DATASET\inspection_report\trajectory_plot.png
+Saved 8 scenario sample composite images to C:\Users\aliba\Desktop\FSOC\FSOC_DATASET\inspection_report\scenario_samples
+
+========================================
+FSOC DATASET INSPECTION REPORT
+========================================
+
+Scenarios                 : 8/8
+Videos                    : 8/8
+PNG Frames                : 7200/7200
+Ground Truth Records     : 7200/7200
+Disturbance Records      : 7200/7200
+
+Resolution                : 640x480 PASS
+FPS                       : 30 PASS
+Frames/Scenario           : 900 PASS
+Duration                  : 30 sec PASS
+
+Motion Continuity         : PASS
+Ground Truth              : PASS
+Disturbance Metadata      : PASS
+PNG/MP4 Consistency       : PASS
+Random Seed               : PASS
+SCN_008 Loss/Reacquisition: PASS
+
+========================================
+DATASET STATUS: PASS
+READY FOR DETECTION
+========================================

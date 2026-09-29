@@ -1,0 +1,11 @@
+disturbance_id,disturbance_category,disturbance_name,enabled,strength,min_strength,max_strength,unit,temporal_behavior,spatial_behavior,affects,implementation,scenario_ids
+DST_MAT_001,ELECTRONIC_NOISE,gaussian_sensor_noise,true,15.0,0.0,60.0,DN,frame_independent,pixel_independent,pixel_values;snr,rng.normal(0, sigma),SCN_002;SCN_006;SCN_008
+DST_MAT_002,ELECTRONIC_NOISE,salt_pepper_impulsive,true,0.003,0.0,0.05,probability,frame_independent,sparse_random,pixel_corruption;outliers,rand < prob -> 0 or 255,SCN_007
+DST_MAT_003,OPTICAL_NOISE,poisson_shot_noise,false,0.8,0.1,5.0,scale,frame_independent,intensity_dependent,photon_fluctuation,rng.poisson(scaled),none
+DST_MAT_004,ATMOSPHERIC,fog_mie_scattering,true,0.55,0.0,1.0,density,persistent_uniform,diffuse_lowpass,contrast_attenuation;blur,frame*(1-s) + blur*s + bias,SCN_005
+DST_MAT_005,ATMOSPHERIC,haze_aerosol_scatter,true,0.30,0.0,1.0,density,persistent_uniform,mild_contrast_drop,pedestal_addition,frame*0.82 + 22.0,SCN_007
+DST_MAT_006,ATMOSPHERIC,rain_precip_streaks,true,0.60,0.0,1.0,density,time_varying,directional_lines,streak_artifacts;occlusion,cv2.line with random intensity,SCN_008
+DST_MAT_007,LIGHTING,low_light_illumination,true,0.32,0.05,1.0,gain,persistent,global_multiplier,snr_reduction;dynamic_range,frame * brightness_factor + 2.0,SCN_006
+DST_MAT_008,MECHANICAL,camera_jitter_vibration,true,15.0,0.0,40.0,pixels,high_frequency,global_frame_shift,boresight_error;motion_blur,sinusoidal + noise displacement,SCN_003;SCN_007;SCN_008
+DST_MAT_009,CARRIER,platform_carrier_motion,true,12.0,0.0,50.0,pixels,low_frequency,slow_trajectory_drift,camera_pose_shift,circular/linear/spiral sway,SCN_004;SCN_007;SCN_008
+DST_MAT_010,LINE_OF_SIGHT,target_occlusion_loss,true,1.0,0.0,1.0,boolean,interval_window,target_suppression,visibility;signal_loss,visible=False;detected=False;beam=0,SCN_008

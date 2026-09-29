@@ -1,0 +1,7 @@
+{
+  "benchmark_name": "FSOC Final Benchmark",
+  "fps": 30,
+  "alignment_threshold_horizontal": 0.05,
+  "alignment_threshold_vertical": 0.05,
+  "target_reacquisition_required": true
+}

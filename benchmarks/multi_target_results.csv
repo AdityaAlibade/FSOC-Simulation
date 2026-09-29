@@ -1,0 +1,5 @@
+scenario_id,target_count,communication_target_id,visible_target_count_mean,multi_target_detection_rate,communication_target_tracking_rate,target_association_accuracy,target_switch_count,decoy_rejection_rate,tracking_rmse,alignment_rate,reacquisition_rate
+SCN_009,2,TGT_001,1.96,1.0,1.0,1.0,0,1.0,1.414,0.9944,
+SCN_010,3,TGT_001,2.74,1.0,1.0,1.0,0,1.0,1.414,0.9933,
+SCN_011,3,TGT_001,2.33,0.99,1.0,1.0,0,1.0,1.524,0.6456,
+SCN_012,3,TGT_001,2.75,0.9923,1.0,0.9443,0,1.0,20.902,0.8533,1.0

@@ -1,0 +1,5 @@
+{
+  "acquisition_frames": 3,
+  "max_consecutive_misses": 5,
+  "fps": 30
+}

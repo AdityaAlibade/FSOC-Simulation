@@ -1,0 +1,9 @@
+scenario_id,scenario_name,motion_type,duration_seconds,fps,total_frames,environment_width,environment_height,camera_width,camera_height,fov_horizontal,fov_vertical,target_size,target_initial_x,target_initial_y,target_speed,max_pan_speed,max_tilt_speed,noise_type,atmospheric_condition,camera_jitter,platform_motion,random_seed
+SCN_001,Straight Line + Clear,straight_line,30,30,900,2000,2000,640,480,4,3,10,100.0,90.0,17.77,5,5,none,Clear,none,none,26170
+SCN_002,Circular + Gaussian Noise,circular,30,30,900,2000,2000,640,480,4,3,10,480.0,240.0,67.02,5,5,gaussian,Clear,none,none,26171
+SCN_003,Figure-8 + Camera Jitter,figure_8,30,30,900,2000,2000,640,480,4,3,15,320.0,240.0,55.4,5,5,none,Clear,high_frequency,none,26172
+SCN_004,Random Motion + Platform Motion,random,30,30,900,2000,2000,640,480,4,3,10,320.0,240.0,34.82,5,5,none,Clear,none,circular,26173
+SCN_005,Straight Line + Fog,straight_line,30,30,900,2000,2000,640,480,4,3,12,520.0,110.0,15.92,5,5,none,Fog,none,none,26174
+SCN_006,Circular + Low Light + Noise,circular,30,30,900,2000,2000,640,480,4,3,8,418.99494936611666,338.99494936611666,43.98,5,5,gaussian,Low Light,none,none,26175
+SCN_007,Figure-8 + Camera Jitter + Platform Motion,figure_8,30,30,900,2000,2000,640,480,4,3,15,320.0,240.0,48.65,5,5,salt_and_pepper,Haze,high_frequency,linear,26176
+SCN_008,Random Motion + Combined Disturbances + Target Loss/Reacquisition,random,30,30,900,2000,2000,640,480,4,3,10,320.0,240.0,36.14,5,5,gaussian,Rain,high_frequency,spiral,26177

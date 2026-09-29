@@ -1,0 +1,3 @@
+metric_type,total_frames,total_visible_frames,total_detected_frames,detection_rate,false_positive_rate,centroid_rmse,track_retention,tracking_rmse,total_alignment_frames,total_aligned_frames,alignment_rate,angular_rmse,time_to_alignment,total_target_loss_events,total_successful_reacquisitions,reacquisition_rate,processing_time_seconds,effective_fps
+overall_micro,7200,7078,7062,0.9977394744278044,0.0,13.458350376091893,1.0,13.443609792380471,7088,5462,0.7705981941309256,0.10816244559048714,1.2875,2,2,1.0,0.33972270000958815,21193.75596566491
+mean_per_scenario,7200,7078,7062,0.9977777777777778,0.0,5.969323166444651,1.0,5.927242491851372,7088,5462,0.7648096446700507,0.08733628046417145,1.2875,2,2,1.0,0.33972270000958815,21480.016454623517

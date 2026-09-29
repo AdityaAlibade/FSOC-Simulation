@@ -1,0 +1,14 @@
+{
+  "dataset_name": "FSOC Virtual Camera Tracking Dataset",
+  "generation_timestamp": "2026-09-28T16:58:54Z",
+  "fps": 30,
+  "resolution": [
+    640,
+    480
+  ],
+  "fov": [
+    4,
+    3
+  ],
+  "scenarios": {}
+}
