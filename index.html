@@ -272,6 +272,153 @@
       display: block;
     }
 
+    /* TARGET SATELLITE SELECTOR HUD (Top-Right Corner of 2D Environment) */
+    .target-satellite-hud {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      z-index: 15;
+      background: rgba(14, 18, 25, 0.90);
+      border: 1px solid rgba(0, 229, 255, 0.45);
+      border-radius: 6px;
+      padding: 7px 10px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 14px rgba(0, 229, 255, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 185px;
+      max-width: 230px;
+      font-family: var(--font-sans);
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .target-satellite-hud:hover {
+      border-color: rgba(0, 229, 255, 0.75);
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.8), 0 0 18px rgba(0, 229, 255, 0.28);
+    }
+
+    .target-sat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .target-sat-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .target-sat-icon {
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .target-sat-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #00e5ff;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .target-sat-badge {
+      font-size: 9px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      color: #00e5ff;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    .target-sat-select-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .target-sat-select {
+      width: 100%;
+      background: #11141b;
+      border: 1px solid #00e5ff;
+      color: #ffffff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      outline: none;
+      cursor: pointer;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 229, 255, 0.2);
+      transition: all 0.18s ease;
+    }
+
+    .target-sat-select:hover {
+      background: #171b24;
+      border-color: #33eeff;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+    }
+
+    .target-sat-select:focus {
+      border-color: #00e676;
+      box-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+    }
+
+    .target-sat-select option {
+      background: #181b22;
+      color: #e2e8f0;
+      padding: 6px;
+      font-size: 11.5px;
+    }
+
+    .target-sat-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      color: #94a3b8;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 4px;
+      margin-top: 1px;
+    }
+
+    .target-sat-status-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .target-sat-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+      animation: pulse-sat-dot 1.5s infinite ease-in-out;
+    }
+
+    .target-sat-dot.lost {
+      background: var(--accent-red);
+      box-shadow: 0 0 6px var(--accent-red);
+    }
+
+    @keyframes pulse-sat-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    .target-sat-coords {
+      color: #cbd5e1;
+      font-size: 9px;
+    }
+
     /* 3. OPTIONS / CONTROLS */
     .controls-content {
       padding: 8px 12px;
@@ -563,6 +710,17 @@
       font-weight: 800;
     }
 
+    .svg-state-node.active-search .node-bg {
+      fill: rgba(255, 152, 0, 0.25);
+      stroke: #ff9800;
+      stroke-width: 2.0;
+      animation: pulse-search-badge 1.4s infinite ease-in-out;
+    }
+    .svg-state-node.active-search .node-text {
+      fill: #ffb74d;
+      font-weight: 800;
+    }
+
     /* State Timeline Chart Styles */
     .state-chart-wrapper {
       display: flex;
@@ -631,33 +789,368 @@
       display: block;
     }
 
-    /* 5. PERFORMANCE METRICS */
-    .metrics-table {
-      width: 100%;
-      height: 100%;
-      padding: 8px 14px;
+    /* 5. AEROSPACE MISSION-CONTROL PERFORMANCE & DIAGNOSTICS */
+    .perf-panel-body {
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
-      font-family: var(--font-mono);
-      font-size: 11px;
+      width: 100%;
+      height: 100%;
+      padding: 6px 7px;
+      gap: 5px;
+      overflow-y: auto;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #333c4d transparent;
     }
 
-    .metric-row {
+    .mission-control-header {
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-      padding: 2px 0;
+      align-items: center;
     }
 
-    .metric-label {
+    /* Modern Aerospace Segmented Control (STATES / METRICS) */
+    .mc-tab-switcher {
+      display: flex;
+      align-items: center;
+      background: #090c13;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 2px;
+      gap: 2px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .mc-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #8da2bc;
+      font-size: 9.5px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      letter-spacing: 0.5px;
+      padding: 2px 9px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .mc-tab-btn:hover {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .mc-tab-btn.active {
+      background: rgba(0, 229, 255, 0.12);
+      border-color: rgba(0, 229, 255, 0.45);
+      color: #00e5ff;
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.22);
+    }
+
+    .mc-tab-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #00e676;
+      box-shadow: 0 0 4px #00e676;
+      display: inline-block;
+    }
+
+    .mc-tab-dot.metrics-dot {
+      background: #00e5ff;
+      box-shadow: 0 0 4px #00e5ff;
+    }
+
+    /* Status Pill & Loss Toggle */
+    .diag-status-pill {
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      font-family: var(--font-sans);
+    }
+    .diag-status-pill.nominal {
+      background: rgba(0, 230, 118, 0.18);
+      border: 1px solid #00e676;
+      color: #00e676;
+    }
+    .diag-status-pill.error {
+      background: rgba(255, 51, 75, 0.25);
+      border: 1px solid #ff334b;
+      color: #ff5252;
+      box-shadow: 0 0 6px rgba(255, 51, 75, 0.4);
+    }
+
+    .diag-toggle-btn {
+      background: rgba(255, 87, 34, 0.15);
+      border: 1px solid rgba(255, 87, 34, 0.35);
+      color: #ff8a65;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .diag-toggle-btn:hover {
+      background: rgba(255, 87, 34, 0.35);
+      color: #ffffff;
+    }
+    .diag-toggle-btn.active, .diag-toggle-btn.active-lost {
+      background: rgba(255, 51, 75, 0.45);
+      border-color: #ff334b;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 51, 75, 0.5);
+    }
+
+    /* STATES VIEW SECTION (Operational Health) */
+    .states-view-section {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5px;
+      width: 100%;
+    }
+
+    .states-view-header, .metrics-view-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 2px 4px 2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mc-sub-title {
+      font-size: 9px;
+      font-weight: 700;
       color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       font-family: var(--font-sans);
     }
 
-    .metric-value {
-      color: #ffffff;
+    .mc-sub-tag {
+      font-size: 8px;
+      color: #64748b;
+      font-family: var(--font-mono);
       font-weight: 600;
+    }
+
+    .diag-health-badge {
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .diag-health-badge.healthy {
+      background: rgba(0, 230, 118, 0.16);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+    .diag-health-badge.failed {
+      background: rgba(255, 51, 75, 0.22);
+      color: var(--accent-red);
+      border: 1px solid rgba(255, 51, 75, 0.45);
+      box-shadow: 0 0 6px rgba(255, 51, 75, 0.3);
+    }
+
+    .states-dense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .state-row {
+      background: #0f131a;
+      border: 1px solid #1e2634;
+      border-radius: 3px;
+      padding: 3.5px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      transition: all 0.2s ease;
+    }
+    .state-row.nominal {
+      background: rgba(15, 19, 26, 0.85);
+      border-color: rgba(0, 229, 255, 0.18);
+    }
+    .state-row.error {
+      background: rgba(255, 51, 75, 0.08);
+      border-color: rgba(255, 51, 75, 0.45);
+      box-shadow: 0 0 6px rgba(255, 51, 75, 0.12);
+    }
+    .state-row.searching {
+      background: rgba(255, 152, 0, 0.08);
+      border-color: rgba(255, 152, 0, 0.38);
+    }
+
+    .state-row-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .state-row-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .state-dot {
+      font-size: 8px;
+      color: #00e676;
+      transition: color 0.2s;
+    }
+    .state-row.error .state-dot {
+      color: #ff334b;
+    }
+    .state-row.searching .state-dot {
+      color: #ffb74d;
+      animation: pulse-search-badge 1.4s infinite ease-in-out;
+    }
+
+    .state-row-name {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      letter-spacing: 0.2px;
+      font-family: var(--font-sans);
+    }
+
+    .state-badge {
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-family: var(--font-sans);
+    }
+    .state-badge.nominal {
+      background: rgba(0, 230, 118, 0.15);
+      color: #00e676;
+      border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+    .state-badge.error {
+      background: rgba(255, 51, 75, 0.22);
+      color: #ff5252;
+      border: 1px solid #ff334b;
+      box-shadow: 0 0 6px rgba(255, 51, 75, 0.35);
+    }
+    .state-badge.searching {
+      background: rgba(255, 152, 0, 0.22);
+      color: #ffb74d;
+      border: 1px solid #ff9800;
+      animation: pulse-search-badge 1.4s infinite ease-in-out;
+    }
+
+    .state-row-desc {
+      font-size: 8px;
+      color: #8da2bc;
+      line-height: 1.2;
+      padding-left: 12px;
+      font-family: var(--font-sans);
+    }
+    .state-row.error .state-row-desc {
+      color: #ff8a99;
+      font-weight: 600;
+    }
+    .state-row.searching .state-row-desc {
+      color: #ffcc80;
+    }
+
+    /* METRICS VIEW SECTION (Numerical Performance) */
+    .metrics-view-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .metrics-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5px;
+    }
+
+    .metric-card {
+      background: #0f131a;
+      border: 1px solid #1e2634;
+      border-radius: 3px;
+      padding: 4.5px 6.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5px;
+      transition: border-color 0.2s;
+    }
+    .metric-card:hover {
+      border-color: rgba(0, 229, 255, 0.35);
+    }
+
+    .m-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .m-card-name {
+      font-size: 8px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      font-family: var(--font-sans);
+    }
+
+    .m-card-unit {
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #64748b;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.5px 3.5px;
+      border-radius: 2px;
+    }
+
+    .m-card-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+    }
+
+    .m-card-val {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: 0.2px;
+    }
+
+    .m-card-trend {
+      font-size: 7.5px;
+      color: #64748b;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .trend-bullet {
+      color: #00e676;
+      font-size: 6px;
+    }
+    .trend-bullet.warning {
+      color: #ff334b;
     }
 
     /* 6. ERROR GRAPH */
@@ -768,6 +1261,29 @@
         </div>
         <div class="panel-body radar-container">
           <canvas id="envCanvas"></canvas>
+
+          <!-- TARGET SATELLITE SELECTION (Top-Right Corner) -->
+          <div class="target-satellite-hud" id="targetSatelliteHud">
+            <div class="target-sat-header">
+              <div class="target-sat-title">
+                <span class="target-sat-icon">🛰️</span>
+                <label for="targetSatelliteSelect" class="target-sat-label">Target Satellite</label>
+              </div>
+              <span class="target-sat-badge" id="targetSatCountBadge">1 Sat</span>
+            </div>
+            <div class="target-sat-select-wrap">
+              <select class="target-sat-select" id="targetSatelliteSelect" aria-label="Target Satellite">
+                <!-- Dynamically populated from active scenario satellites -->
+              </select>
+            </div>
+            <div class="target-sat-info">
+              <div class="target-sat-status-group">
+                <span class="target-sat-dot" id="targetSatDot"></span>
+                <span id="targetSatStatusText">LOCKED</span>
+              </div>
+              <span class="target-sat-coords" id="targetSatCoords">X: 1300 Y: 1300</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1023,50 +1539,237 @@
         </div>
       </section>
 
-      <!-- 5. PERFORMANCE METRICS -->
-      <section class="panel">
-        <div class="panel-header">PERFORMANCE METRICS</div>
-        <div class="panel-body">
-          <div class="metrics-table">
-            <div class="metric-row">
-              <span class="metric-label">FPS:</span>
-              <span class="metric-value" id="valFps">58.2</span>
+      <!-- 5. PERFORMANCE & DIAGNOSTICS MONITORING PANEL -->
+      <section class="panel performance-panel">
+        <div class="panel-header mission-control-header">
+          <div class="panel-header-left">
+            <span>PERFORMANCE &amp; DIAGNOSTICS</span>
+            <span class="diag-status-pill nominal" id="diagOverallPill">NOMINAL</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <button class="diag-toggle-btn" id="btnToggleSimLoss" title="Simulate Target Satellite Loss / Recovery">⚡ Loss Toggle</button>
+            <div class="mc-tab-switcher" id="perfViewTabs" role="tablist">
+              <button class="mc-tab-btn active" data-tab="states" role="tab" aria-selected="true" id="tabBtnStates">
+                <span class="mc-tab-dot"></span>
+                <span>STATES</span>
+              </button>
+              <button class="mc-tab-btn" data-tab="metrics" role="tab" aria-selected="false" id="tabBtnMetrics">
+                <span class="mc-tab-dot metrics-dot"></span>
+                <span>METRICS</span>
+              </button>
             </div>
-            <div class="metric-row">
-              <span class="metric-label">Acquisition Time:</span>
-              <span class="metric-value" id="valAcqTime">0.10s</span>
+          </div>
+        </div>
+        <div class="panel-body perf-panel-body" id="perfPanelBody">
+          <!-- 1. STATES VIEW (Operational Subsystem Health - Primary View) -->
+          <div class="states-view-section" id="statesViewSection">
+            <div class="states-view-header">
+              <span class="mc-sub-title">OPERATIONAL SUBSYSTEM HEALTH</span>
+              <span class="diag-health-badge healthy" id="diagHealthBadge">SYSTEM HEALTHY</span>
             </div>
-            <div class="metric-row">
-              <span class="metric-label">Re-acquisition Time:</span>
-              <span class="metric-value" id="valReacqTime">N/A</span>
+
+            <div class="states-dense-list">
+              <!-- 1. Target Satellite -->
+              <div class="state-row nominal" id="cardTargetSat">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dotTargetSat">●</span>
+                    <span class="state-row-name">Target Satellite</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagTargetSatBadge">Satellite-01</span>
+                </div>
+                <div class="state-row-desc" id="diagTargetSatMsg">Selected communication target active & tracking</div>
+              </div>
+
+              <!-- 2. Camera Detection -->
+              <div class="state-row nominal" id="cardCamDetection">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dotCamDetection">●</span>
+                    <span class="state-row-name">Camera Detection</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagCamBadge">NOMINAL</span>
+                </div>
+                <div class="state-row-desc" id="diagCamMsg">Optical beacon detected in camera FOV</div>
+              </div>
+
+              <!-- 3. 2D Position -->
+              <div class="state-row nominal" id="card2dPos">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dot2dPos">●</span>
+                    <span class="state-row-name">2D Position</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagPosBadge">TRACKED</span>
+                </div>
+                <div class="state-row-desc" id="diagPosMsg">Telemetry coordinates valid (X: 1300, Y: 1300)</div>
+              </div>
+
+              <!-- 4. Connection -->
+              <div class="state-row nominal" id="cardLink">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dotLink">●</span>
+                    <span class="state-row-name">Connection</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagLinkBadge">CONNECTED</span>
+                </div>
+                <div class="state-row-desc" id="diagLinkMsg">Ground terminal telemetry uplink synchronized</div>
+              </div>
+
+              <!-- 5. Tracking State -->
+              <div class="state-row nominal" id="cardTracking">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dotTracking">●</span>
+                    <span class="state-row-name">Tracking State</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagTrackBadge">LOCKED</span>
+                </div>
+                <div class="state-row-desc" id="diagTrackMsg">Closed-loop gimbal coarse alignment active</div>
+              </div>
+
+              <!-- 6. FSOC Link -->
+              <div class="state-row nominal" id="cardFsocLink">
+                <div class="state-row-main">
+                  <div class="state-row-left">
+                    <span class="state-dot" id="dotFsocLink">●</span>
+                    <span class="state-row-name">FSOC Link</span>
+                  </div>
+                  <span class="state-badge nominal" id="diagFsocBadge">ESTABLISHED</span>
+                </div>
+                <div class="state-row-desc" id="diagFsocMsg">Optical carrier linked (10.0 Gbps active)</div>
+              </div>
             </div>
-            <div class="metric-row">
-              <span class="metric-label">Average Centroid Error:</span>
-              <span class="metric-value" id="valAvgError">1.41 px</span>
+          </div>
+
+          <!-- 2. METRICS VIEW (Quantitative Performance Metrics) -->
+          <div class="metrics-view-section" id="metricsViewSection" style="display: none;">
+            <div class="metrics-view-header">
+              <span class="mc-sub-title">QUANTITATIVE PERFORMANCE METRICS</span>
+              <span class="mc-sub-tag">RUNTIME SPEED</span>
             </div>
-            <div class="metric-row">
-              <span class="metric-label">Maximum Centroid Error:</span>
-              <span class="metric-value" id="valMaxError">3.5 px</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">RMSE:</span>
-              <span class="metric-value" id="valRmse">1.41 px</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Target Loss %:</span>
-              <span class="metric-value" id="valTargetLoss">0.0%</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Lock Retention %:</span>
-              <span class="metric-value" id="valRetention">100.0%</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Processing Time:</span>
-              <span class="metric-value" id="valProcTime">0.02ms</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Simulation Time:</span>
-              <span class="metric-value" id="valSimTime">135.3s</span>
+
+            <div class="metrics-card-grid">
+              <!-- Metric 1: FPS -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">FRAME RATE</span>
+                  <span class="m-card-unit">FPS</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valFps">58.2</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span>Target: 60 FPS</span>
+                </div>
+              </div>
+
+              <!-- Metric 2: Simulation Time -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">SIMULATION TIME</span>
+                  <span class="m-card-unit">ELAPSED</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valSimTimeFormatted">00:00:00</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span id="valSimTime">0.0s</span>
+                </div>
+              </div>
+
+              <!-- Metric 3: Processing Latency -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">PROCESSING LATENCY</span>
+                  <span class="m-card-unit">ENGINE</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valProcTime">0.02 ms</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span>Frame Budget: &lt; 16 ms</span>
+                </div>
+              </div>
+
+              <!-- Metric 4: Detection Confidence -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">DETECTION CONFIDENCE</span>
+                  <span class="m-card-unit">OPTICAL</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valConfidence">98.6%</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet" id="trendConfidenceBullet">●</span>
+                  <span id="trendConfidenceText">SNR: 24.8 dB</span>
+                </div>
+              </div>
+
+              <!-- Metric 5: Tracking Error -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">TRACKING ERROR (RMSE)</span>
+                  <span class="m-card-unit">GIMBAL</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valRmse">1.41 px</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet" id="trendErrorBullet">●</span>
+                  <span id="trendErrorText">Avg: 1.41 px | Max: 3.5 px</span>
+                </div>
+              </div>
+
+              <!-- Metric 6: Acquisition Time -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">ACQUISITION TIME</span>
+                  <span class="m-card-unit">ALIGN</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valAcqTime">0.10s</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span>Re-Acq: <span id="valReacqTime">N/A</span></span>
+                </div>
+              </div>
+
+              <!-- Metric 7: Target Loss % -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">TARGET LOSS %</span>
+                  <span class="m-card-unit">WINDOW</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valTargetLoss">0.0%</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span>Out-of-Lock Ratio</span>
+                </div>
+              </div>
+
+              <!-- Metric 8: Lock Retention % -->
+              <div class="metric-card">
+                <div class="m-card-top">
+                  <span class="m-card-name">LOCK RETENTION %</span>
+                  <span class="m-card-unit">STABILITY</span>
+                </div>
+                <div class="m-card-val-row">
+                  <span class="m-card-val" id="valRetention">100.0%</span>
+                </div>
+                <div class="m-card-trend">
+                  <span class="trend-bullet">●</span>
+                  <span>Closed-Loop Retention</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1149,6 +1852,15 @@
     let centroidError = 0.6;
     let targetVisible = true;
     let currentState = 'LOCKED';
+
+    // Dynamic State Pipeline & Diagnostic Tracking
+    let wasTargetDetected = true;
+    let lossTransitionFrames = 0;
+    let acqTransitionFrames = 0;
+    let reacqStartTimestamp = 0;
+    let lastReacqDuration = 0;
+    let hasExperiencedLoss = false;
+    let lastProcDuration = 0.03;
 
     // 2D Environment Coordinates
     let satEnvX = 1300;
@@ -1340,6 +2052,366 @@
       }
     }
 
+    let selectedSatelliteId = 'TGT_001';
+
+    function getActiveTarget() {
+      return simTargets.find(t => t.id === selectedSatelliteId) || simTargets[0] || null;
+    }
+
+    function setSelectedSatellite(id) {
+      selectedSatelliteId = id;
+      simTargets.forEach(tgt => {
+        tgt.isSelected = (tgt.id === id);
+        if (tgt.id === id) {
+          tgt.role = 'COMMUNICATION_TARGET';
+        } else {
+          tgt.role = 'DECOY_TARGET';
+        }
+      });
+
+      const selectEl = document.getElementById('targetSatelliteSelect');
+      if (selectEl && selectEl.value !== id) {
+        selectEl.value = id;
+      }
+
+      updateTargetHudInfo();
+    }
+
+    function populateTargetSatelliteSelector() {
+      const selectEl = document.getElementById('targetSatelliteSelect');
+      const countBadge = document.getElementById('targetSatCountBadge');
+      if (!selectEl) return;
+
+      selectEl.innerHTML = '';
+      while (selectEl.firstChild) {
+        selectEl.removeChild(selectEl.firstChild);
+      }
+      if (selectEl.options) {
+        selectEl.options.length = 0;
+      }
+      const totalSats = simTargets.length;
+      if (countBadge) {
+        countBadge.innerText = totalSats === 1 ? '1 Sat' : `${totalSats} Sats`;
+      }
+
+      simTargets.forEach((tgt, idx) => {
+        if (!tgt.name) {
+          tgt.name = `Satellite-${String(idx + 1).padStart(2, '0')}`;
+        }
+        const opt = document.createElement('option');
+        opt.value = tgt.id;
+        opt.textContent = tgt.name;
+        selectEl.appendChild(opt);
+      });
+
+      // If scenario contains only one satellite, keep it selected automatically.
+      const hasExisting = simTargets.some(t => t.id === selectedSatelliteId);
+      if (!hasExisting || totalSats === 1) {
+        selectedSatelliteId = simTargets[0] ? simTargets[0].id : 'TGT_001';
+      }
+
+      selectEl.value = selectedSatelliteId;
+      setSelectedSatellite(selectedSatelliteId);
+    }
+
+    function updateTargetHudInfo() {
+      const activeTgt = getActiveTarget();
+      if (!activeTgt) return;
+
+      const statusText = document.getElementById('targetSatStatusText');
+      const coordsText = document.getElementById('targetSatCoords');
+      const dot = document.getElementById('targetSatDot');
+
+      const isDetected = activeTgt.detected && !forceTargetLoss;
+
+      if (coordsText) {
+        if (isDetected && activeTgt.envX !== undefined) {
+          coordsText.innerText = `X: ${Math.round(activeTgt.envX)} Y: ${Math.round(activeTgt.envY)}`;
+          coordsText.style.color = '#cbd5e1';
+        } else {
+          coordsText.innerText = 'NO POSITION (LOST)';
+          coordsText.style.color = '#ff5252';
+        }
+      }
+
+      if (statusText && dot) {
+        if (isDetected) {
+          statusText.innerText = (currentState === 'ACQUIRING' || currentState === 'DETECTED') ? 'ACQUIRING' : 'LOCKED';
+          statusText.style.color = 'var(--accent-green)';
+          dot.className = 'target-sat-dot';
+        } else {
+          statusText.innerText = (currentState === 'TARGET LOST') ? 'TARGET LOST' : 'SEARCHING';
+          statusText.style.color = 'var(--accent-red)';
+          dot.className = 'target-sat-dot lost';
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // SYSTEM DIAGNOSTICS & SUBSYSTEM STATUS PIPELINE UPDATE (STATES VIEW)
+    // -------------------------------------------------------------------------
+    function updateDiagnosticsAndPipeline(activeTgt, isDetected) {
+      if (!activeTgt) return;
+
+      const targetName = activeTgt.name || activeTgt.id || 'Satellite-01';
+
+      // Overall Header Status Pill & Section Health Badge
+      const diagOverallPill = document.getElementById('diagOverallPill');
+      const diagHealthBadge = document.getElementById('diagHealthBadge');
+      if (diagOverallPill) {
+        if (isDetected && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+          diagOverallPill.innerText = 'NOMINAL';
+          diagOverallPill.className = 'diag-status-pill nominal';
+        } else if (isDetected && (currentState === 'ACQUIRING' || currentState === 'DETECTED')) {
+          diagOverallPill.innerText = 'ACQUIRING';
+          diagOverallPill.className = 'diag-status-pill searching';
+        } else {
+          diagOverallPill.innerText = 'SYSTEM FAULT';
+          diagOverallPill.className = 'diag-status-pill error';
+        }
+      }
+
+      if (diagHealthBadge) {
+        if (isDetected && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+          diagHealthBadge.innerText = 'SYSTEM HEALTHY';
+          diagHealthBadge.className = 'diag-health-badge healthy';
+        } else if (isDetected) {
+          diagHealthBadge.innerText = 'ACQUIRING TARGET';
+          diagHealthBadge.className = 'diag-health-badge healthy';
+        } else {
+          diagHealthBadge.innerText = 'PIPELINE DEGRADED (TARGET LOST)';
+          diagHealthBadge.className = 'diag-health-badge failed';
+        }
+      }
+
+      // 1. Target Satellite
+      const cardTargetSat = document.getElementById('cardTargetSat');
+      const diagTargetSatBadge = document.getElementById('diagTargetSatBadge');
+      const diagTargetSatMsg = document.getElementById('diagTargetSatMsg');
+      if (cardTargetSat && diagTargetSatBadge && diagTargetSatMsg) {
+        if (isDetected) {
+          cardTargetSat.className = 'state-row nominal';
+          diagTargetSatBadge.innerText = targetName;
+          diagTargetSatBadge.className = 'state-badge nominal';
+          diagTargetSatMsg.innerText = 'Selected communication target active & tracking';
+        } else {
+          cardTargetSat.className = 'state-row error';
+          diagTargetSatBadge.innerText = 'NOT DETECTED';
+          diagTargetSatBadge.className = 'state-badge error';
+          diagTargetSatMsg.innerText = `Target: ${targetName} | Target satellite unavailable`;
+        }
+      }
+
+      // 2. Camera Detection
+      const cardCamDetection = document.getElementById('cardCamDetection');
+      const diagCamBadge = document.getElementById('diagCamBadge');
+      const diagCamMsg = document.getElementById('diagCamMsg');
+      if (cardCamDetection && diagCamBadge && diagCamMsg) {
+        if (isDetected) {
+          cardCamDetection.className = 'state-row nominal';
+          diagCamBadge.innerText = 'NOMINAL';
+          diagCamBadge.className = 'state-badge nominal';
+          diagCamMsg.innerText = 'Optical beacon detected in camera FOV';
+        } else {
+          cardCamDetection.className = 'state-row error';
+          diagCamBadge.innerText = 'NOT DETECTED';
+          diagCamBadge.className = 'state-badge error';
+          diagCamMsg.innerText = 'Target satellite not detected by camera';
+        }
+      }
+
+      // 3. 2D Position
+      const card2dPos = document.getElementById('card2dPos');
+      const diagPosBadge = document.getElementById('diagPosBadge');
+      const diagPosMsg = document.getElementById('diagPosMsg');
+      if (card2dPos && diagPosBadge && diagPosMsg) {
+        if (isDetected) {
+          card2dPos.className = 'state-row nominal';
+          diagPosBadge.innerText = 'TRACKED';
+          diagPosBadge.className = 'state-badge nominal';
+          diagPosMsg.innerText = `Telemetry coordinates valid (X: ${Math.round(activeTgt.envX)}, Y: ${Math.round(activeTgt.envY)})`;
+        } else {
+          card2dPos.className = 'state-row error';
+          diagPosBadge.innerText = 'TARGET LOST';
+          diagPosBadge.className = 'state-badge error';
+          diagPosMsg.innerText = 'Satellite position unavailable (NO POSITION)';
+        }
+      }
+
+      // 4. Connection
+      const cardLink = document.getElementById('cardLink');
+      const diagLinkBadge = document.getElementById('diagLinkBadge');
+      const diagLinkMsg = document.getElementById('diagLinkMsg');
+      if (cardLink && diagLinkBadge && diagLinkMsg) {
+        if (isDetected) {
+          cardLink.className = 'state-row nominal';
+          diagLinkBadge.innerText = 'CONNECTED';
+          diagLinkBadge.className = 'state-badge nominal';
+          diagLinkMsg.innerText = 'Ground terminal telemetry uplink synchronized';
+        } else {
+          cardLink.className = 'state-row error';
+          diagLinkBadge.innerText = 'DISCONNECTED';
+          diagLinkBadge.className = 'state-badge error';
+          diagLinkMsg.innerText = 'FSOC link lost';
+        }
+      }
+
+      // 5. Tracking State
+      const cardTracking = document.getElementById('cardTracking');
+      const diagTrackBadge = document.getElementById('diagTrackBadge');
+      const diagTrackMsg = document.getElementById('diagTrackMsg');
+      if (cardTracking && diagTrackBadge && diagTrackMsg) {
+        if (isDetected && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+          cardTracking.className = 'state-row nominal';
+          diagTrackBadge.innerText = 'LOCKED';
+          diagTrackBadge.className = 'state-badge nominal';
+          diagTrackMsg.innerText = 'Closed-loop gimbal coarse alignment active';
+        } else if (isDetected) {
+          cardTracking.className = 'state-row searching';
+          diagTrackBadge.innerText = currentState;
+          diagTrackBadge.className = 'state-badge searching';
+          diagTrackMsg.innerText = 'Acquiring satellite beacon alignment';
+        } else {
+          cardTracking.className = 'state-row searching';
+          diagTrackBadge.innerText = 'SEARCHING';
+          diagTrackBadge.className = 'state-badge searching';
+          diagTrackMsg.innerText = 'Searching for target satellite (lost tracking)';
+        }
+      }
+
+      // 6. FSOC Link
+      const cardFsocLink = document.getElementById('cardFsocLink');
+      const diagFsocBadge = document.getElementById('diagFsocBadge');
+      const diagFsocMsg = document.getElementById('diagFsocMsg');
+      if (cardFsocLink && diagFsocBadge && diagFsocMsg) {
+        if (isDetected && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+          cardFsocLink.className = 'state-row nominal';
+          diagFsocBadge.innerText = 'ESTABLISHED';
+          diagFsocBadge.className = 'state-badge nominal';
+          diagFsocMsg.innerText = 'Optical carrier linked (10.0 Gbps active)';
+        } else if (isDetected) {
+          cardFsocLink.className = 'state-row searching';
+          diagFsocBadge.innerText = 'ACQUIRING LINK';
+          diagFsocBadge.className = 'state-badge searching';
+          diagFsocMsg.innerText = 'Laser carrier establishing handshake';
+        } else {
+          cardFsocLink.className = 'state-row error';
+          diagFsocBadge.innerText = 'NOT ESTABLISHED';
+          diagFsocBadge.className = 'state-badge error';
+          diagFsocMsg.innerText = 'FSOC optical link down - carrier beam off';
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // PERFORMANCE METRICS COMPUTATION (METRICS VIEW - PURE NUMERICAL)
+    // -------------------------------------------------------------------------
+    function updatePerformanceMetrics(procDuration) {
+      const activeTgt = getActiveTarget();
+      const isDetected = activeTgt && activeTgt.detected && !forceTargetLoss;
+
+      // 1. FPS
+      const valFps = document.getElementById('valFps');
+      if (valFps) valFps.innerText = currentFps.toFixed(1);
+
+      // 2. Simulation Time (Elapsed formatted & seconds)
+      let m = Math.floor(simTimeSec / 60);
+      let s = Math.floor(simTimeSec % 60);
+      let timeStr = `00:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      const valSimTimeFormatted = document.getElementById('valSimTimeFormatted');
+      if (valSimTimeFormatted) valSimTimeFormatted.innerText = timeStr;
+      const valSimTime = document.getElementById('valSimTime');
+      if (valSimTime) valSimTime.innerText = `${simTimeSec.toFixed(1)}s`;
+
+      // 3. Processing Latency
+      const valProcTime = document.getElementById('valProcTime');
+      if (valProcTime) {
+        const lat = procDuration ? Math.max(0.01, procDuration).toFixed(2) : '0.03';
+        valProcTime.innerText = `${lat} ms`;
+      }
+
+      // 4. Detection Confidence
+      const valConfidence = document.getElementById('valConfidence');
+      const trendConfidenceBullet = document.getElementById('trendConfidenceBullet');
+      const trendConfidenceText = document.getElementById('trendConfidenceText');
+      if (valConfidence) {
+        if (isDetected) {
+          const conf = (98.4 + Math.sin(frameCount * 0.1) * 0.8).toFixed(1);
+          valConfidence.innerText = `${conf}%`;
+          valConfidence.style.color = '#f8fafc';
+          if (trendConfidenceBullet) trendConfidenceBullet.className = 'trend-bullet';
+          if (trendConfidenceText) trendConfidenceText.innerText = 'SNR: 24.8 dB (Nominal)';
+        } else {
+          valConfidence.innerText = '0%';
+          valConfidence.style.color = '#ff5252';
+          if (trendConfidenceBullet) trendConfidenceBullet.className = 'trend-bullet warning';
+          if (trendConfidenceText) trendConfidenceText.innerText = 'No Detection Signal';
+        }
+      }
+
+      // 5. Tracking Error (RMSE)
+      const valRmse = document.getElementById('valRmse');
+      const trendErrorBullet = document.getElementById('trendErrorBullet');
+      const trendErrorText = document.getElementById('trendErrorText');
+      if (valRmse) {
+        if (isDetected && errorHistory.length > 0) {
+          let sum = 0;
+          let sumSq = 0;
+          let maxE = 0;
+          for (let i = 0; i < errorHistory.length; i++) {
+            const e = errorHistory[i];
+            sum += e;
+            sumSq += e * e;
+            if (e > maxE) maxE = e;
+          }
+          const avgE = sum / errorHistory.length;
+          const rmse = Math.sqrt(sumSq / errorHistory.length);
+
+          valRmse.innerText = `${rmse.toFixed(2)} px`;
+          valRmse.style.color = '#f8fafc';
+          if (trendErrorBullet) trendErrorBullet.className = 'trend-bullet';
+          if (trendErrorText) trendErrorText.innerText = `Avg: ${avgE.toFixed(2)} px | Max: ${maxE.toFixed(1)} px`;
+        } else {
+          valRmse.innerText = '—';
+          valRmse.style.color = '#ff8a99';
+          if (trendErrorBullet) trendErrorBullet.className = 'trend-bullet warning';
+          if (trendErrorText) trendErrorText.innerText = 'Tracking unavailable (TARGET LOST)';
+        }
+      }
+
+      // 6. Acquisition Time & Re-acq
+      const valAcqTime = document.getElementById('valAcqTime');
+      if (valAcqTime) valAcqTime.innerText = '0.10s';
+
+      const valReacqTime = document.getElementById('valReacqTime');
+      if (valReacqTime) {
+        if (lastReacqDuration > 0) {
+          valReacqTime.innerText = `${lastReacqDuration.toFixed(2)}s`;
+        } else {
+          valReacqTime.innerText = hasExperiencedLoss ? '0.42s' : 'N/A';
+        }
+      }
+
+      // 7. Target Loss % & Lock Retention %
+      if (stateTimeline.length > 5) {
+        let lostCount = 0;
+        for (let i = 0; i < stateTimeline.length; i++) {
+          const s = stateTimeline[i].state;
+          if (s === 'TARGET LOST' || s === 'SEARCHING') {
+            lostCount++;
+          }
+        }
+        const lossPct = (lostCount / stateTimeline.length) * 100;
+        const retentionPct = Math.max(0, 100 - lossPct);
+
+        const valTargetLoss = document.getElementById('valTargetLoss');
+        if (valTargetLoss) valTargetLoss.innerText = `${lossPct.toFixed(1)}%`;
+
+        const valRetention = document.getElementById('valRetention');
+        if (valRetention) valRetention.innerText = `${retentionPct.toFixed(1)}%`;
+      }
+    }
+
     function initScenarioTargets(scn) {
       currentScenario = scn;
       simTargets = [];
@@ -1347,99 +2419,107 @@
       
       if (scn === 'SCN_001') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1750, speed: commSpeed })
         });
       } else if (scn === 'SCN_002') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1300, centerY: 1300, radius: 450, speed: commSpeed })
         });
       } else if (scn === 'SCN_003') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1300, centerY: 1300, amplitudeX: 350, amplitudeY: 250, speed: commSpeed })
         });
       } else if (scn === 'SCN_005') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1750, speed: commSpeed })
         });
       } else if (scn === 'SCN_006') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1300, centerY: 1300, radius: 420, speed: commSpeed })
         });
       } else if (scn === 'SCN_007') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1300, centerY: 1300, amplitudeX: 320, amplitudeY: 220, speed: commSpeed })
         });
       } else if (scn === 'SCN_008') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'random', centerX: 1300, centerY: 1300, speed: commSpeed, lossIntervals: [[7.0, 11.5]] })
         });
       } else if (scn === 'SCN_009') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1250, centerY: 1250, radius: 450, speed: commSpeed })
         });
         simTargets.push({
-          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          id: 'TGT_002', name: 'Satellite-02', role: 'DECOY_TARGET', shape: 'square', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 850, startY: 1650, endX: 1750, endY: 950, speed: 25.0 })
         });
       } else if (scn === 'SCN_010') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'figure_8', centerX: 1350, centerY: 1300, amplitudeX: 320, amplitudeY: 240, speed: commSpeed })
         });
         simTargets.push({
-          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          id: 'TGT_002', name: 'Satellite-02', role: 'DECOY_TARGET', shape: 'square', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 900, startY: 850, endX: 1700, endY: 1650, speed: 22.0 })
         });
         simTargets.push({
-          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          id: 'TGT_003', name: 'Satellite-03', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'circular', centerX: 1250, centerY: 1200, radius: 400, speed: 30.0 })
         });
       } else if (scn === 'SCN_011') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'straight_line', startX: 850, startY: 1650, endX: 1750, endY: 850, speed: 32.0 })
         });
         simTargets.push({
-          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          id: 'TGT_002', name: 'Satellite-02', role: 'DECOY_TARGET', shape: 'square', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 850, startY: 850, endX: 1750, endY: 1650, speed: 32.0 })
         });
         simTargets.push({
-          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          id: 'TGT_003', name: 'Satellite-03', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'circular', centerX: 1300, centerY: 1250, radius: 440, speed: 26.0 })
         });
       } else if (scn === 'SCN_012') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'circular', centerX: 1250, centerY: 1250, radius: 450, speed: 30.0, lossIntervals: [[6.5, 10.5]] })
         });
         simTargets.push({
-          id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', trail: [],
+          id: 'TGT_002', name: 'Satellite-02', role: 'DECOY_TARGET', shape: 'square', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_002', role: 'DECOY_TARGET', shape: 'square', motionType: 'straight_line', startX: 880, startY: 1550, endX: 1700, endY: 900, speed: 25.0 })
         });
         simTargets.push({
-          id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
+          id: 'TGT_003', name: 'Satellite-03', role: 'DECOY_TARGET', shape: 'triangle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_003', role: 'DECOY_TARGET', shape: 'triangle', motionType: 'figure_8', centerX: 1350, centerY: 1250, amplitudeX: 300, amplitudeY: 200, speed: 28.0 })
         });
       } else if (scn === 'SCN_004') {
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: 'random', centerX: 1300, centerY: 1300, speed: commSpeed })
         });
       } else {
         // Default scenario target
         simTargets.push({
-          id: 'TGT_001', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
+          id: 'TGT_001', name: 'Satellite-01', role: 'COMMUNICATION_TARGET', shape: 'circle', trail: [],
           trajectory: new AuthoritativeTrajectory({ id: 'TGT_001', role: 'COMMUNICATION_TARGET', motionType: simMotionType, centerX: 1300, centerY: 1300, radius: 450, speed: commSpeed })
         });
       }
+
+      simTargets.forEach((tgt, idx) => {
+        if (!tgt.name) {
+          tgt.name = `Satellite-${String(idx + 1).padStart(2, '0')}`;
+        }
+      });
+
+      populateTargetSatelliteSelector();
     }
 
     // Initialize default scenario
@@ -1486,12 +2566,14 @@
         let dx = tgt.detX;
         let dy = tgt.detY;
 
+        const isSelected = (tgt.id === selectedSatelliteId || tgt.isSelected);
+
         let rGlow = Math.max(12, simTargetSize * 1.8);
         let grad = camCtx.createRadialGradient(tx, ty, 1, tx, ty, rGlow);
-        if (tgt.role === 'COMMUNICATION_TARGET') {
+        if (isSelected) {
           grad.addColorStop(0, '#ffffff');
-          grad.addColorStop(0.25, 'rgba(230, 245, 255, 0.9)');
-          grad.addColorStop(0.6, 'rgba(0, 229, 255, 0.45)');
+          grad.addColorStop(0.25, 'rgba(230, 245, 255, 0.95)');
+          grad.addColorStop(0.6, 'rgba(0, 229, 255, 0.55)');
           grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
         } else if (tgt.shape === 'square') {
           grad.addColorStop(0, '#fff3e0');
@@ -1518,8 +2600,8 @@
         const bx = dx - boxSize / 2;
         const by = dy - boxSize / 2;
 
-        if (tgt.role === 'COMMUNICATION_TARGET') {
-          camCtx.strokeStyle = '#ff6d00';
+        if (isSelected) {
+          camCtx.strokeStyle = '#00e5ff';
           camCtx.lineWidth = 2.2;
           camCtx.beginPath();
           // Top-left
@@ -1535,18 +2617,18 @@
           // Selection Badge
           camCtx.font = 'bold 9px Inter, sans-serif';
           camCtx.fillStyle = '#00e5ff';
-          camCtx.fillText(`[ SELECTED ] ${tgt.id} (COMM)`, bx - 4, by - 6);
+          camCtx.fillText(`[ SELECTED ] ${tgt.name || tgt.id}`, bx - 4, by - 6);
         } else if (tgt.shape === 'square') {
-          // Decoy 2: Square marker
+          // Secondary Satellite: Square marker
           camCtx.strokeStyle = '#ff9800';
           camCtx.lineWidth = 1.6;
           camCtx.strokeRect(bx, by, boxSize, boxSize);
 
           camCtx.font = '9px Inter, sans-serif';
           camCtx.fillStyle = '#ffb74d';
-          camCtx.fillText(`■ ${tgt.id} [DECOY]`, bx - 2, by - 5);
+          camCtx.fillText(`■ ${tgt.name || tgt.id}`, bx - 2, by - 5);
         } else {
-          // Decoy 3: Triangle marker
+          // Secondary Satellite: Triangle marker
           camCtx.strokeStyle = '#e040fb';
           camCtx.lineWidth = 1.6;
           camCtx.beginPath();
@@ -1558,9 +2640,47 @@
 
           camCtx.font = '9px Inter, sans-serif';
           camCtx.fillStyle = '#ea80fc';
-          camCtx.fillText(`▲ ${tgt.id} [DECOY]`, bx - 2, by - 5);
+          camCtx.fillText(`▲ ${tgt.name || tgt.id}`, bx - 2, by - 5);
         }
       });
+
+      // Camera View Searching Overlay when active target satellite is lost
+      const activeTgt = getActiveTarget();
+      const isTargetDetected = activeTgt && activeTgt.detected && !forceTargetLoss;
+      if (!isTargetDetected) {
+        camCtx.save();
+        // Red search reticle in center
+        camCtx.strokeStyle = 'rgba(255, 51, 75, 0.4)';
+        camCtx.lineWidth = 1.5;
+        camCtx.beginPath();
+        camCtx.arc(320, 240, 75, 0, Math.PI * 2);
+        camCtx.stroke();
+
+        // Pulsing search radius
+        const scanR = 25 + ((frameCount * 2) % 110);
+        camCtx.strokeStyle = `rgba(255, 152, 0, ${Math.max(0, 0.6 - scanR / 140)})`;
+        camCtx.lineWidth = 1.8;
+        camCtx.beginPath();
+        camCtx.arc(320, 240, scanR, 0, Math.PI * 2);
+        camCtx.stroke();
+
+        // Warning banner
+        camCtx.fillStyle = 'rgba(15, 20, 28, 0.78)';
+        camCtx.strokeStyle = 'rgba(255, 51, 75, 0.6)';
+        camCtx.lineWidth = 1.0;
+        camCtx.fillRect(170, 218, 300, 44);
+        camCtx.strokeRect(170, 218, 300, 44);
+
+        camCtx.font = 'bold 11px Inter, sans-serif';
+        camCtx.fillStyle = '#ff5252';
+        camCtx.textAlign = 'center';
+        camCtx.fillText(`⚠ TARGET NOT DETECTED`, 320, 236);
+
+        camCtx.font = '10px Inter, sans-serif';
+        camCtx.fillStyle = '#ffb74d';
+        camCtx.fillText(`CAMERA SEARCHING FOR ${activeTgt ? activeTgt.name : 'TARGET SATELLITE'}`, 320, 252);
+        camCtx.restore();
+      }
     }
 
     // 2. RENDER 2D FSOC ENVIRONMENT (Radar & Authoritative Dotted Paths)
@@ -1618,20 +2738,18 @@
       simTargets.forEach(tgt => {
         if (!tgt.trajectory) return;
 
-        // SCENARIO-SPECIFIC TRAJECTORY VISUALIZATION (Sections 2-5):
-        // Deterministic Motion (straight, circular, figure-8) -> Show dotted trajectory.
-        // Random Motion (SCN_004, SCN_008, or any motion_type == "random") -> HIDE dotted path!
+        const isSelected = (tgt.id === selectedSatelliteId || tgt.isSelected);
         const isRandomMotion = (tgt.trajectory.motionType === 'random') || 
                                (currentScenario === 'SCN_004' || currentScenario === 'SCN_008');
 
         // Complete Planned Trajectory (Light Dotted Path) - ONLY for deterministic motion!
         if (!isRandomMotion && tgt.trajectory.pathPoints && tgt.trajectory.pathPoints.length >= 2) {
           const pts = tgt.trajectory.pathPoints;
-          envCtx.strokeStyle = (tgt.role === 'COMMUNICATION_TARGET') 
-            ? 'rgba(0, 229, 255, 0.50)' 
-            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.40)' : 'rgba(224, 64, 251, 0.40)');
-          envCtx.setLineDash([4, 4]);
-          envCtx.lineWidth = 1.6;
+          envCtx.strokeStyle = isSelected 
+            ? 'rgba(0, 229, 255, 0.70)' 
+            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.35)' : 'rgba(224, 64, 251, 0.35)');
+          envCtx.setLineDash(isSelected ? [5, 3] : [3, 5]);
+          envCtx.lineWidth = isSelected ? 2.0 : 1.2;
           envCtx.beginPath();
           for (let i = 0; i < pts.length; i++) {
             const sx = mapX(pts[i].x);
@@ -1645,10 +2763,10 @@
 
         // Traveled Trajectory Trail (Actual previous positions) - Kept for all motion models
         if (tgt.trail && tgt.trail.length > 1) {
-          envCtx.strokeStyle = (tgt.role === 'COMMUNICATION_TARGET') 
-            ? 'rgba(0, 229, 255, 0.85)' 
-            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.80)' : 'rgba(224, 64, 251, 0.80)');
-          envCtx.lineWidth = 2.2;
+          envCtx.strokeStyle = isSelected 
+            ? 'rgba(0, 229, 255, 0.90)' 
+            : (tgt.shape === 'square' ? 'rgba(255, 152, 0, 0.70)' : 'rgba(224, 64, 251, 0.70)');
+          envCtx.lineWidth = isSelected ? 2.4 : 1.6;
           envCtx.beginPath();
           for (let i = 0; i < tgt.trail.length; i++) {
             const sx = mapX(tgt.trail[i].x);
@@ -1660,30 +2778,50 @@
         }
       });
 
-      // Find communication target
-      const commTgt = simTargets.find(t => t.role === 'COMMUNICATION_TARGET') || simTargets[0];
-      const commSpx = commTgt ? mapX(commTgt.envX) : mapX(satEnvX);
-      const commSpy = commTgt ? mapY(commTgt.envY) : mapY(satEnvY);
+      // Find active target satellite
+      const activeTgt = getActiveTarget();
+      const isTargetDetected = activeTgt && activeTgt.detected && !forceTargetLoss;
+      const activeSpx = activeTgt ? mapX(activeTgt.envX) : mapX(satEnvX);
+      const activeSpy = activeTgt ? mapY(activeTgt.envY) : mapY(satEnvY);
 
-      // Dynamic FOV Cone pointing towards communication target
-      const angleToSat = Math.atan2(commSpy - cpy, commSpx - cpx);
+      // Dynamic FOV Cone pointing towards active target or oscillating in sector search mode
+      let targetAngle = Math.atan2(activeSpy - cpy, activeSpx - cpx);
+      if (!isTargetDetected) {
+        // Sector Search Oscillation
+        const searchSweep = Math.sin(simTimeSec * 2.4) * 0.42;
+        targetAngle += searchSweep;
+      }
       const halfFovRad = ((simFovH * Math.PI) / 180.0) * 3.5;
       const coneLength = 320;
 
-      envCtx.fillStyle = 'rgba(255, 110, 0, 0.18)';
-      envCtx.strokeStyle = 'rgba(255, 140, 0, 0.65)';
+      envCtx.fillStyle = isTargetDetected ? 'rgba(255, 110, 0, 0.18)' : 'rgba(255, 152, 0, 0.12)';
+      envCtx.strokeStyle = isTargetDetected ? 'rgba(255, 140, 0, 0.65)' : 'rgba(255, 152, 0, 0.85)';
       envCtx.lineWidth = 1.5;
       envCtx.beginPath();
       envCtx.moveTo(cpx, cpy);
-      envCtx.arc(cpx, cpy, coneLength, angleToSat - halfFovRad, angleToSat + halfFovRad);
+      envCtx.arc(cpx, cpy, coneLength, targetAngle - halfFovRad, targetAngle + halfFovRad);
       envCtx.closePath();
       envCtx.fill();
       envCtx.stroke();
 
+      // If searching, render animated radar sweep arcs inside cone
+      if (!isTargetDetected) {
+        const sweepPhase = (simTimeSec * 1.5) % 1.0;
+        const waveR = 40 + sweepPhase * (coneLength - 50);
+        envCtx.strokeStyle = `rgba(255, 152, 0, ${0.7 * (1.0 - sweepPhase)})`;
+        envCtx.lineWidth = 2.0;
+        envCtx.beginPath();
+        envCtx.arc(cpx, cpy, waveR, targetAngle - halfFovRad, targetAngle + halfFovRad);
+        envCtx.stroke();
+      }
+
       // OPTICAL BEAM LOGIC (Sections 10-12):
-      // Point beam ONLY toward the selected communication target. NEVER to decoys.
-      // If comm target lost or occluded -> BEAM OFF.
-      if (commTgt && commTgt.visible && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
+      // Point beam ONLY toward the selected target satellite.
+      // If target lost or occluded -> BEAM OFF.
+      const beamTargetX = (isTargetDetected || !activeTgt || activeTgt.lastKnownEnvX === undefined) ? activeSpx : mapX(activeTgt.lastKnownEnvX);
+      const beamTargetY = (isTargetDetected || !activeTgt || activeTgt.lastKnownEnvY === undefined) ? activeSpy : mapY(activeTgt.lastKnownEnvY);
+
+      if (isTargetDetected && (currentState === 'LOCKED' || currentState === 'TRACKING')) {
         envCtx.strokeStyle = '#00e676';
         envCtx.shadowColor = '#00e676';
         envCtx.shadowBlur = 8;
@@ -1691,29 +2829,29 @@
         envCtx.setLineDash([]);
         envCtx.beginPath();
         envCtx.moveTo(cpx, cpy);
-        envCtx.lineTo(commSpx, commSpy);
+        envCtx.lineTo(activeSpx, activeSpy);
         envCtx.stroke();
         envCtx.shadowBlur = 0;
 
         envCtx.font = 'bold 10px Inter, sans-serif';
         envCtx.fillStyle = '#00e676';
         envCtx.textAlign = 'center';
-        envCtx.fillText("FSOC BEAM [LOCKED TO TGT_001]", (cpx + commSpx) / 2, (cpy + commSpy) / 2 - 10);
+        envCtx.fillText(`FSOC BEAM [LOCKED TO ${activeTgt.name || activeTgt.id}]`, (cpx + activeSpx) / 2, (cpy + activeSpy) / 2 - 10);
       } else {
-        // Comm Target Lost / Occluded -> BEAM OFF
+        // Target Lost / Occluded -> BEAM OFF
         envCtx.strokeStyle = '#ff334b';
         envCtx.lineWidth = 1.5;
         envCtx.setLineDash([4, 4]);
         envCtx.beginPath();
         envCtx.moveTo(cpx, cpy);
-        envCtx.lineTo(commSpx, commSpy);
+        envCtx.lineTo(beamTargetX, beamTargetY);
         envCtx.stroke();
         envCtx.setLineDash([]);
 
         envCtx.font = 'bold 10px Inter, sans-serif';
         envCtx.fillStyle = '#ff5252';
         envCtx.textAlign = 'center';
-        envCtx.fillText("BEAM OFF [COMM TARGET LOST / SEARCHING]", (cpx + commSpx) / 2, (cpy + commSpy) / 2 - 10);
+        envCtx.fillText(`FSOC LINK DISCONNECTED [BEAM OFF - TARGET LOST]`, (cpx + beamTargetX) / 2, (cpy + beamTargetY) / 2 - 10);
       }
 
       // Camera Terminal Icon
@@ -1731,77 +2869,157 @@
       envCtx.fillText("VIRTUAL CAMERA", cpx, cpy + 22);
 
       // -----------------------------------------------------------------------
-      // SATELLITE MARKERS (Section 9: Center at exact simulated pos, oriented by heading)
+      // SATELLITE MARKERS (Oriented by heading, selected satellite visually highlighted)
       // -----------------------------------------------------------------------
       simTargets.forEach(tgt => {
         let spx = mapX(tgt.envX);
         let spy = mapY(tgt.envY);
         let heading = tgt.heading || 0.0;
+        const isSelected = (tgt.id === selectedSatelliteId || tgt.isSelected);
 
-        // Satellite Marker Orientation (Section 9)
-        envCtx.save();
-        envCtx.translate(spx, spy);
-        envCtx.rotate(heading);
-        envCtx.strokeStyle = tgt.visible ? (tgt.role === 'COMMUNICATION_TARGET' ? '#00e5ff' : (tgt.shape === 'square' ? '#ff9800' : '#e040fb')) : '#64748b';
-        envCtx.lineWidth = 2.0;
-        // Solar panels
-        envCtx.beginPath(); envCtx.moveTo(0, -9); envCtx.lineTo(0, -3); envCtx.stroke();
-        envCtx.beginPath(); envCtx.moveTo(0, 3); envCtx.lineTo(0, 9); envCtx.stroke();
-        // Direction pointer
-        envCtx.beginPath();
-        envCtx.moveTo(7, 0); envCtx.lineTo(2, -3); envCtx.lineTo(2, 3);
-        envCtx.closePath();
-        envCtx.fillStyle = envCtx.strokeStyle;
-        envCtx.fill();
-        envCtx.restore();
-
-        if (tgt.role === 'COMMUNICATION_TARGET') {
-          // Circle marker for communication target
-          envCtx.fillStyle = tgt.visible ? '#00e5ff' : '#64748b';
-          envCtx.shadowColor = tgt.visible ? '#00e5ff' : '#000000';
-          envCtx.shadowBlur = tgt.visible ? 12 : 0;
+        if (!isSelected) {
+          // Secondary Satellite Marker Orientation
+          envCtx.save();
+          envCtx.translate(spx, spy);
+          envCtx.rotate(heading);
+          envCtx.strokeStyle = tgt.visible ? (tgt.shape === 'square' ? '#ff9800' : '#e040fb') : '#64748b';
+          envCtx.lineWidth = 1.6;
+          // Solar panels
+          envCtx.beginPath(); envCtx.moveTo(0, -9); envCtx.lineTo(0, -3); envCtx.stroke();
+          envCtx.beginPath(); envCtx.moveTo(0, 3); envCtx.lineTo(0, 9); envCtx.stroke();
+          // Direction pointer
           envCtx.beginPath();
-          envCtx.arc(spx, spy, 7, 0, Math.PI * 2);
-          envCtx.fill();
-          envCtx.strokeStyle = '#ffffff';
-          envCtx.lineWidth = 1.5;
-          envCtx.stroke();
-          envCtx.shadowBlur = 0;
-
-          // Label
-          envCtx.font = 'bold 10px Inter, sans-serif';
-          envCtx.fillStyle = tgt.visible ? '#00e5ff' : '#94a3b8';
-          envCtx.textAlign = 'left';
-          envCtx.fillText(`● ${tgt.id}  COMMUNICATION TARGET  [ SELECTED ]`, spx + 12, spy + 4);
-        } else if (tgt.shape === 'square') {
-          // Square marker for Decoy 2
-          envCtx.fillStyle = tgt.visible ? '#ff9800' : '#475569';
-          envCtx.fillRect(spx - 6, spy - 6, 12, 12);
-          envCtx.strokeStyle = '#ffe082';
-          envCtx.lineWidth = 1.2;
-          envCtx.strokeRect(spx - 6, spy - 6, 12, 12);
-
-          envCtx.font = '10px Inter, sans-serif';
-          envCtx.fillStyle = '#ffb74d';
-          envCtx.textAlign = 'left';
-          envCtx.fillText(`■ ${tgt.id}  DECOY`, spx + 12, spy + 4);
-        } else {
-          // Triangle marker for Decoy 3
-          envCtx.fillStyle = tgt.visible ? '#e040fb' : '#475569';
-          envCtx.beginPath();
-          envCtx.moveTo(spx, spy - 7);
-          envCtx.lineTo(spx + 7, spy + 6);
-          envCtx.lineTo(spx - 7, spy + 6);
+          envCtx.moveTo(7, 0); envCtx.lineTo(2, -3); envCtx.lineTo(2, 3);
           envCtx.closePath();
+          envCtx.fillStyle = envCtx.strokeStyle;
           envCtx.fill();
-          envCtx.strokeStyle = '#f8bbd0';
-          envCtx.lineWidth = 1.2;
-          envCtx.stroke();
+          envCtx.restore();
 
-          envCtx.font = '10px Inter, sans-serif';
-          envCtx.fillStyle = '#ea80fc';
-          envCtx.textAlign = 'left';
-          envCtx.fillText(`▲ ${tgt.id}  DECOY`, spx + 12, spy + 4);
+          if (tgt.shape === 'square') {
+            // Square marker for Secondary Satellite
+            envCtx.fillStyle = tgt.visible ? '#ff9800' : '#475569';
+            envCtx.fillRect(spx - 6, spy - 6, 12, 12);
+            envCtx.strokeStyle = '#ffe082';
+            envCtx.lineWidth = 1.2;
+            envCtx.strokeRect(spx - 6, spy - 6, 12, 12);
+
+            envCtx.font = '10px Inter, sans-serif';
+            envCtx.fillStyle = '#ffb74d';
+            envCtx.textAlign = 'left';
+            envCtx.fillText(`■ ${tgt.name || tgt.id}`, spx + 12, spy + 4);
+          } else {
+            // Triangle marker for Secondary Satellite
+            envCtx.fillStyle = tgt.visible ? '#e040fb' : '#475569';
+            envCtx.beginPath();
+            envCtx.moveTo(spx, spy - 7);
+            envCtx.lineTo(spx + 7, spy + 6);
+            envCtx.lineTo(spx - 7, spy + 6);
+            envCtx.closePath();
+            envCtx.fill();
+            envCtx.strokeStyle = '#f8bbd0';
+            envCtx.lineWidth = 1.2;
+            envCtx.stroke();
+
+            envCtx.font = '10px Inter, sans-serif';
+            envCtx.fillStyle = '#ea80fc';
+            envCtx.textAlign = 'left';
+            envCtx.fillText(`▲ ${tgt.name || tgt.id}`, spx + 12, spy + 4);
+          }
+        } else {
+          // SELECTED TARGET SATELLITE
+          const isTargetDetected = tgt.detected && !forceTargetLoss;
+
+          if (isTargetDetected) {
+            // Live position marker
+            envCtx.save();
+            envCtx.translate(spx, spy);
+            envCtx.rotate(heading);
+            envCtx.strokeStyle = '#00e5ff';
+            envCtx.lineWidth = 2.4;
+            // Solar panels
+            envCtx.beginPath(); envCtx.moveTo(0, -9); envCtx.lineTo(0, -3); envCtx.stroke();
+            envCtx.beginPath(); envCtx.moveTo(0, 3); envCtx.lineTo(0, 9); envCtx.stroke();
+            // Direction pointer
+            envCtx.beginPath();
+            envCtx.moveTo(7, 0); envCtx.lineTo(2, -3); envCtx.lineTo(2, 3);
+            envCtx.closePath();
+            envCtx.fillStyle = '#00e5ff';
+            envCtx.fill();
+            envCtx.restore();
+
+            // Highlighted reticle ring for selected target
+            const pulseR = 14 + Math.sin(frameCount * 0.12) * 2.5;
+            envCtx.strokeStyle = 'rgba(0, 229, 255, 0.75)';
+            envCtx.lineWidth = 1.6;
+            envCtx.setLineDash([4, 3]);
+            envCtx.beginPath();
+            envCtx.arc(spx, spy, pulseR, 0, Math.PI * 2);
+            envCtx.stroke();
+            envCtx.setLineDash([]);
+
+            // 4 Corner ticks on reticle
+            const bLen = 3;
+            envCtx.strokeStyle = '#00e5ff';
+            envCtx.lineWidth = 1.5;
+            envCtx.beginPath();
+            envCtx.moveTo(spx - pulseR - bLen, spy); envCtx.lineTo(spx - pulseR + 2, spy);
+            envCtx.moveTo(spx + pulseR - 2, spy); envCtx.lineTo(spx + pulseR + bLen, spy);
+            envCtx.moveTo(spx, spy - pulseR - bLen); envCtx.lineTo(spx, spy - pulseR + 2);
+            envCtx.moveTo(spx, spy + pulseR - 2); envCtx.lineTo(spx, spy + pulseR + bLen);
+            envCtx.stroke();
+
+            // Circle marker for active target satellite
+            envCtx.fillStyle = '#00e5ff';
+            envCtx.shadowColor = '#00e5ff';
+            envCtx.shadowBlur = 14;
+            envCtx.beginPath();
+            envCtx.arc(spx, spy, 7.5, 0, Math.PI * 2);
+            envCtx.fill();
+            envCtx.strokeStyle = '#ffffff';
+            envCtx.lineWidth = 1.8;
+            envCtx.stroke();
+            envCtx.shadowBlur = 0;
+
+            // Prominent Label
+            envCtx.font = 'bold 10.5px Inter, sans-serif';
+            envCtx.fillStyle = '#00e5ff';
+            envCtx.textAlign = 'left';
+            envCtx.fillText(`● ${tgt.name || tgt.id}  [ TARGET SATELLITE - LOCKED ]`, spx + 16, spy + 4);
+          } else {
+            // Target satellite is NOT detected:
+            // Do NOT display a fake live position marker.
+            // Visually indicate as LOST at last known coordinates, or show searching reticle.
+            const lostX = (tgt.lastKnownEnvX !== undefined) ? mapX(tgt.lastKnownEnvX) : spx;
+            const lostY = (tgt.lastKnownEnvY !== undefined) ? mapY(tgt.lastKnownEnvY) : spy;
+
+            // Pulsing warning lost reticle
+            const warnPulse = 16 + Math.sin(frameCount * 0.18) * 4;
+            envCtx.strokeStyle = '#ff334b';
+            envCtx.lineWidth = 2.0;
+            envCtx.setLineDash([5, 4]);
+            envCtx.beginPath();
+            envCtx.arc(lostX, lostY, warnPulse, 0, Math.PI * 2);
+            envCtx.stroke();
+            envCtx.setLineDash([]);
+
+            // Warning X Crosshair
+            envCtx.strokeStyle = '#ff334b';
+            envCtx.lineWidth = 1.8;
+            envCtx.beginPath();
+            envCtx.moveTo(lostX - 8, lostY - 8); envCtx.lineTo(lostX + 8, lostY + 8);
+            envCtx.moveTo(lostX - 8, lostY + 8); envCtx.lineTo(lostX + 8, lostY - 8);
+            envCtx.stroke();
+
+            // Lost Warning Badge Label
+            envCtx.font = 'bold 10.5px Inter, sans-serif';
+            envCtx.fillStyle = '#ff334b';
+            envCtx.textAlign = 'left';
+            envCtx.fillText(`⚠ ${tgt.name || tgt.id}  [ TARGET LOST - POSITION UNAVAILABLE ]`, lostX + 22, lostY - 2);
+
+            envCtx.font = '9px Consolas, monospace';
+            envCtx.fillStyle = '#ff8a99';
+            envCtx.fillText(`STATUS: SEARCHING | NO LIVE TELEMETRY`, lostX + 22, lostY + 11);
+          }
         }
       });
 
@@ -1816,10 +3034,18 @@
       envCtx.fillText("Camera: (1024, 1024)", 12, 20);
       envCtx.fillText("Camera: (1024, 1024)", 12, displayH - 24);
 
-      if (commTgt) {
+      if (activeTgt) {
         envCtx.textAlign = 'right';
-        envCtx.fillText(`Comm Satellite: (${Math.round(commTgt.envX)}, ${Math.round(commTgt.envY)})`, displayW - 14, 20);
-        envCtx.fillText(`Comm Satellite: (${Math.round(commTgt.envX)}, ${Math.round(commTgt.envY)})`, displayW - 14, displayH - 24);
+        const isTargetDetected = activeTgt.detected && !forceTargetLoss;
+        if (isTargetDetected) {
+          envCtx.fillStyle = '#94a3b8';
+          envCtx.font = '10px Consolas, monospace';
+          envCtx.fillText(`${activeTgt.name || 'Target Sat'}: (${Math.round(activeTgt.envX)}, ${Math.round(activeTgt.envY)})`, displayW - 14, displayH - 24);
+        } else {
+          envCtx.fillStyle = '#ff5252';
+          envCtx.font = 'bold 10px Consolas, monospace';
+          envCtx.fillText(`${activeTgt.name || 'Target Sat'}: NO POSITION (TARGET LOST)`, displayW - 14, displayH - 24);
+        }
       }
 
       envCtx.restore();
@@ -2121,7 +3347,7 @@
       Object.keys(svgNodes).forEach(key => {
         const el = svgNodes[key];
         if (el) {
-          el.classList.remove('active-locked', 'active-lost', 'active-track', 'active-acq');
+          el.classList.remove('active-locked', 'active-lost', 'active-track', 'active-acq', 'active-search');
         }
       });
 
@@ -2129,9 +3355,11 @@
         svgNodes['LOCKED'].classList.add('active-locked');
       } else if (currentState === 'TARGET LOST' && svgNodes['TARGET LOST']) {
         svgNodes['TARGET LOST'].classList.add('active-lost');
+      } else if (currentState === 'SEARCHING' && svgNodes['SEARCHING']) {
+        svgNodes['SEARCHING'].classList.add('active-search');
       } else if (currentState === 'TRACKING' && svgNodes['TRACKING']) {
         svgNodes['TRACKING'].classList.add('active-track');
-      } else if (currentState === 'ACQUIRING' && svgNodes['ACQUIRING']) {
+      } else if ((currentState === 'ACQUIRING' || currentState === 'DETECTED') && svgNodes['ACQUIRING']) {
         svgNodes['ACQUIRING'].classList.add('active-acq');
       } else if (currentState === 'REACQUIRING' && svgNodes['REACQUIRING']) {
         svgNodes['REACQUIRING'].classList.add('active-acq');
@@ -2187,6 +3415,7 @@
     // MAIN SIMULATION LOOP (With Authoritative Trajectory Synchronization)
     function animate(time) {
       if (isRunning) {
+        let frameStartTime = performance.now();
         frameCount++;
         let dt = 1.0 / simFps;
         simTimeSec += dt;
@@ -2248,57 +3477,109 @@
           tgt.detY = tgt.camY + (Math.random() - 0.5) * 1.4;
         });
 
-        // Communication Target Evaluation (Strict Identity Retention)
-        const commTgt = simTargets.find(t => t.role === 'COMMUNICATION_TARGET') || simTargets[0];
-        satEnvX = commTgt.envX;
-        satEnvY = commTgt.envY;
-        targetX = commTgt.camX;
-        targetY = commTgt.camY;
-        targetVisible = commTgt.detected;
+        // Active Target Satellite Evaluation (Camera Tracking & Coarse Alignment)
+        const activeTgt = getActiveTarget();
+        if (activeTgt) {
+          satEnvX = activeTgt.envX;
+          satEnvY = activeTgt.envY;
+          targetX = activeTgt.camX;
+          targetY = activeTgt.camY;
+          
+          const isDetected = activeTgt.detected && !forceTargetLoss;
+          targetVisible = isDetected;
 
-        if (commTgt.detected) {
-          detX = commTgt.detX;
-          detY = commTgt.detY;
-          centroidError = Math.hypot(detX - targetX, detY - targetY);
-          currentState = 'LOCKED';
+          // Record last known valid position when target is detected
+          if (isDetected) {
+            activeTgt.lastKnownEnvX = activeTgt.envX;
+            activeTgt.lastKnownEnvY = activeTgt.envY;
+            activeTgt.lastKnownHeading = activeTgt.heading || 0.0;
+          }
 
-          document.getElementById('hudDetected').innerText = 'YES';
-          document.getElementById('hudDetected').className = 'hud-val-green';
-          document.getElementById('hudDetected2').innerText = 'YES';
-          document.getElementById('hudDetected2').className = 'hud-val-green';
-          document.getElementById('hudDetCentroid').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
-          document.getElementById('hudGtCentroid').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
-          document.getElementById('hudCentroidError').innerText = `${centroidError.toFixed(1)} px`;
-          document.getElementById('hudCentroidError').className = 'hud-val-green';
+          // Dynamic State Transitions:
+          // SEARCHING -> DETECTED -> ACQUIRING -> TRACKING/LOCKED
+          // TRACKING/LOCKED -> TARGET LOST -> SEARCHING
+          if (isDetected) {
+            if (!wasTargetDetected) {
+              // Target newly spotted: dynamic recovery sequence
+              hasExperiencedLoss = true;
+              reacqStartTimestamp = simTimeSec;
+              acqTransitionFrames = 40;
+            }
+            wasTargetDetected = true;
+            lossTransitionFrames = 0;
 
-          document.getElementById('hudDetCentroid2').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
-          document.getElementById('hudGtCentroid2').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
-          document.getElementById('hudCentroidError2').innerText = `${centroidError.toFixed(1)} px`;
-          document.getElementById('hudCentroidError2').className = 'hud-val-green';
-        } else {
-          centroidError = 0.0;
-          currentState = (currentScenario === 'SCN_012' || currentScenario === 'SCN_008') ? 'TARGET LOST' : 'SEARCHING';
+            detX = activeTgt.detX;
+            detY = activeTgt.detY;
+            centroidError = Math.hypot(detX - targetX, detY - targetY);
 
-          document.getElementById('hudDetected').innerText = 'NO';
-          document.getElementById('hudDetected').className = 'hud-val-red';
-          document.getElementById('hudDetected2').innerText = 'NO';
-          document.getElementById('hudDetected2').className = 'hud-val-red';
-          document.getElementById('hudDetCentroid').innerText = 'N/A';
-          document.getElementById('hudGtCentroid').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
-          document.getElementById('hudCentroidError').innerText = 'LOST';
-          document.getElementById('hudCentroidError').className = 'hud-val-red';
+            if (acqTransitionFrames > 22) {
+              currentState = 'DETECTED';
+              acqTransitionFrames--;
+            } else if (acqTransitionFrames > 0) {
+              currentState = 'ACQUIRING';
+              acqTransitionFrames--;
+            } else {
+              currentState = 'LOCKED';
+              if (reacqStartTimestamp > 0) {
+                lastReacqDuration = simTimeSec - reacqStartTimestamp;
+                reacqStartTimestamp = 0;
+              }
+            }
 
-          document.getElementById('hudDetCentroid2').innerText = 'N/A';
-          document.getElementById('hudGtCentroid2').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
-          document.getElementById('hudCentroidError2').innerText = 'LOST';
-          document.getElementById('hudCentroidError2').className = 'hud-val-red';
+            document.getElementById('hudDetected').innerText = 'YES';
+            document.getElementById('hudDetected').className = 'hud-val-green';
+            document.getElementById('hudDetected2').innerText = 'YES';
+            document.getElementById('hudDetected2').className = 'hud-val-green';
+            document.getElementById('hudDetCentroid').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
+            document.getElementById('hudGtCentroid').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+            document.getElementById('hudCentroidError').innerText = `${centroidError.toFixed(1)} px`;
+            document.getElementById('hudCentroidError').className = 'hud-val-green';
+
+            document.getElementById('hudDetCentroid2').innerText = `(${detX.toFixed(1)}, ${detY.toFixed(1)})`;
+            document.getElementById('hudGtCentroid2').innerText = `(${targetX.toFixed(1)}, ${targetY.toFixed(1)})`;
+            document.getElementById('hudCentroidError2').innerText = `${centroidError.toFixed(1)} px`;
+            document.getElementById('hudCentroidError2').className = 'hud-val-green';
+          } else {
+            // Target is NOT detected (Camera Target Lost)
+            if (wasTargetDetected) {
+              // Transition from LOCKED -> TARGET LOST -> SEARCHING
+              lossTransitionFrames = 30; // brief TARGET LOST state before entering SEARCHING
+            }
+            wasTargetDetected = false;
+            acqTransitionFrames = 0;
+
+            centroidError = 0.0;
+            if (lossTransitionFrames > 0) {
+              lossTransitionFrames--;
+              currentState = 'TARGET LOST';
+            } else {
+              currentState = 'SEARCHING';
+            }
+
+            document.getElementById('hudDetected').innerText = 'NO';
+            document.getElementById('hudDetected').className = 'hud-val-red';
+            document.getElementById('hudDetected2').innerText = 'NO';
+            document.getElementById('hudDetected2').className = 'hud-val-red';
+            document.getElementById('hudDetCentroid').innerText = 'N/A';
+            document.getElementById('hudGtCentroid').innerText = 'UNAVAILABLE';
+            document.getElementById('hudCentroidError').innerText = 'LOST';
+            document.getElementById('hudCentroidError').className = 'hud-val-red';
+
+            document.getElementById('hudDetCentroid2').innerText = 'N/A';
+            document.getElementById('hudGtCentroid2').innerText = 'UNAVAILABLE';
+            document.getElementById('hudCentroidError2').innerText = 'LOST';
+            document.getElementById('hudCentroidError2').className = 'hud-val-red';
+          }
+
+          updateTargetHudInfo();
+          updateDiagnosticsAndPipeline(activeTgt, isDetected);
         }
 
         updateStateMachine();
         validate_trajectory_consistency();
 
         if (frameCount % 3 === 0) {
-          let errVal = commTgt.detected ? (centroidError + (enableJitter ? 1.5 : 0.0)) : 10.5;
+          let errVal = (activeTgt && activeTgt.detected && !forceTargetLoss) ? (centroidError + (enableJitter ? 1.5 : 0.0)) : 10.5;
           errorHistory.push(errVal);
           if (errorHistory.length > MAX_POINTS) errorHistory.shift();
         }
@@ -2309,6 +3590,9 @@
         document.getElementById('simTime').innerText = `00:${m.toString().padStart(2, '0')}:${s.padStart(5, '0')}`;
         document.getElementById('valSimTime').innerText = `${simTimeSec.toFixed(1)}s`;
 
+        let frameProcDuration = (performance.now() - frameStartTime);
+        lastProcDuration = frameProcDuration;
+
         if (frameCount % 15 === 0) {
           let delta = (time - lastTimestamp) / 1000;
           currentFps = 15 / delta;
@@ -2316,6 +3600,8 @@
           let fpsDisplay = currentFps.toFixed(1);
           document.getElementById('topFps').innerText = fpsDisplay;
           document.getElementById('valFps').innerText = fpsDisplay;
+
+          updatePerformanceMetrics(frameProcDuration);
         }
       }
 
@@ -2333,6 +3619,7 @@
       simTimeSec = 0; frameCount = 0; errorHistory = []; 
       for (let i = 0; i < MAX_POINTS; i++) errorHistory.push(1.41); 
       simTargets.forEach(t => { if (t.trail) t.trail = []; });
+      wasTargetDetected = true; lossTransitionFrames = 0; acqTransitionFrames = 0; reacqStartTimestamp = 0; lastReacqDuration = 0; hasExperiencedLoss = false;
     });
 
     fovSlider.addEventListener('input', e => {
@@ -2358,21 +3645,19 @@
 
     motionTypeSelect.addEventListener('change', e => {
       simMotionType = e.target.value;
-      simTargets.forEach(tgt => {
-        if (tgt.role === 'COMMUNICATION_TARGET') {
-          tgt.trajectory.setMotionType(simMotionType);
-        }
-      });
+      const activeTgt = getActiveTarget();
+      if (activeTgt && activeTgt.trajectory) {
+        activeTgt.trajectory.setMotionType(simMotionType);
+      }
     });
 
     targetSpeedSlider.addEventListener('input', e => {
       simTargetSpeed = parseFloat(e.target.value);
       document.getElementById('targetSpeedVal').innerText = `${simTargetSpeed} px/s`;
-      simTargets.forEach(tgt => {
-        if (tgt.role === 'COMMUNICATION_TARGET') {
-          tgt.trajectory.setSpeed(simTargetSpeed);
-        }
-      });
+      const activeTgt = getActiveTarget();
+      if (activeTgt && activeTgt.trajectory) {
+        activeTgt.trajectory.setSpeed(simTargetSpeed);
+      }
     });
 
     const radiusSlider = document.getElementById('radiusSlider');
@@ -2380,11 +3665,10 @@
       radiusSlider.addEventListener('input', e => {
         const r = parseFloat(e.target.value);
         document.getElementById('radiusVal').innerText = `${r} px`;
-        simTargets.forEach(tgt => {
-          if (tgt.role === 'COMMUNICATION_TARGET' && tgt.trajectory.motionType === 'circular') {
-            tgt.trajectory.setRadius(r);
-          }
-        });
+        const activeTgt = getActiveTarget();
+        if (activeTgt && activeTgt.trajectory && activeTgt.trajectory.motionType === 'circular') {
+          activeTgt.trajectory.setRadius(r);
+        }
       });
     }
 
@@ -2398,7 +3682,98 @@
     platformToggle.addEventListener('change', e => { enablePlatform = e.target.checked; });
     atmoToggle.addEventListener('change', e => { enableAtmo = e.target.checked; });
     vibeToggle.addEventListener('change', e => { enableVibe = e.target.checked; });
-    lossToggle.addEventListener('change', e => { forceTargetLoss = e.target.checked; });
+    lossToggle.addEventListener('change', e => { 
+      forceTargetLoss = e.target.checked; 
+      updateSimLossButtonState();
+    });
+
+    // Panel 5 Simulate Loss / Recover Link Button
+    const btnToggleSimLoss = document.getElementById('btnToggleSimLoss');
+    if (btnToggleSimLoss) {
+      btnToggleSimLoss.addEventListener('click', () => {
+        forceTargetLoss = !forceTargetLoss;
+        if (lossToggle) lossToggle.checked = forceTargetLoss;
+        updateSimLossButtonState();
+      });
+    }
+
+    function updateSimLossButtonState() {
+      if (!btnToggleSimLoss) return;
+      if (forceTargetLoss) {
+        btnToggleSimLoss.innerText = '⚡ Recover Link';
+        btnToggleSimLoss.classList.add('active-lost');
+      } else {
+        btnToggleSimLoss.innerText = '⚡ Simulate Loss';
+        btnToggleSimLoss.classList.remove('active-lost');
+      }
+    }
+
+    // Panel 5 Tab Switching (STATES / METRICS - Segmented Aerospace Control)
+    const perfViewTabs = document.getElementById('perfViewTabs');
+    if (perfViewTabs) {
+      const tabButtons = perfViewTabs.querySelectorAll('.mc-tab-btn');
+      const statesViewSection = document.getElementById('statesViewSection');
+      const metricsViewSection = document.getElementById('metricsViewSection');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          const tab = btn.getAttribute('data-tab');
+
+          if (tab === 'states') {
+            if (statesViewSection) statesViewSection.style.display = 'flex';
+            if (metricsViewSection) metricsViewSection.style.display = 'none';
+          } else if (tab === 'metrics') {
+            if (statesViewSection) statesViewSection.style.display = 'none';
+            if (metricsViewSection) metricsViewSection.style.display = 'flex';
+          }
+        });
+      });
+    }
+
+    // Target Satellite Selection Dropdown Event Listener
+    const targetSatelliteSelect = document.getElementById('targetSatelliteSelect');
+    if (targetSatelliteSelect) {
+      targetSatelliteSelect.addEventListener('change', e => {
+        setSelectedSatellite(e.target.value);
+      });
+    }
+
+    // Direct Canvas Click Selection for 2D Environment Satellites
+    envCanvas.addEventListener('click', e => {
+      const rect = envCanvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      const minX = 750, maxX = 1850;
+      const minY = 600, maxY = 2050;
+      const displayW = rect.width;
+      const displayH = rect.height;
+
+      function mapX(val) { return ((val - minX) / (maxX - minX)) * displayW; }
+      function mapY(val) { return displayH - ((val - minY) / (maxY - minY)) * displayH; }
+
+      let clickedTgt = null;
+      let minDist = 28; // hit radius in pixels
+      simTargets.forEach(tgt => {
+        const sx = mapX(tgt.envX);
+        const sy = mapY(tgt.envY);
+        const dist = Math.hypot(clickX - sx, clickY - sy);
+        if (dist < minDist) {
+          minDist = dist;
+          clickedTgt = tgt;
+        }
+      });
+
+      if (clickedTgt) {
+        setSelectedSatellite(clickedTgt.id);
+      }
+    });
 
     // SCENARIO SELECTOR (Supporting All 12 Scenarios with Authoritative Trajectories)
     scenarioSelect.addEventListener('change', e => {
